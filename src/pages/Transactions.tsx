@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -48,6 +49,7 @@ const TYPES: TransactionType[] = ['Income', 'Expense'];
 const STATUSES: ApprovalStatus[] = ['Draft', 'Submitted', 'Approved', 'Rejected'];
 
 export default function Transactions() {
+  const { t } = useTranslation();
   const { isManager } = useAuth();
   const { data: branches = [] } = useBranches();
 
@@ -75,81 +77,92 @@ export default function Transactions() {
   const updateFilter = (patch: Partial<TransactionFilters>) =>
     setFilters((prev) => ({ ...prev, ...patch, page: 1 }));
 
+  const branchNameById = useMemo(
+    () => new Map(branches.map((b) => [b.id, b.name])),
+    [branches],
+  );
+
   const canEdit = (t: Transaction) => {
     // Users cannot edit approved transactions; managers can always edit.
     if (isManager) return true;
-    return t.status !== 'Approved';
+    return t.approvalStatus !== 'Approved';
   };
 
   const columns: GridColDef<Transaction>[] = useMemo(
     () => [
       {
         field: 'date',
-        headerName: 'Date',
+        headerName: t('common.date'),
         width: 120,
         valueFormatter: (value) => formatDate(value as string),
       },
       {
         field: 'type',
-        headerName: 'Type',
+        headerName: t('common.type'),
         width: 110,
         renderCell: (params) => <TypeChip type={params.row.type} />,
       },
-      { field: 'category', headerName: 'Category', width: 140 },
+      { field: 'category', headerName: t('common.category'), width: 140 },
       {
         field: 'amount',
-        headerName: 'Amount',
+        headerName: t('common.amount'),
         width: 130,
         valueFormatter: (value) => formatCurrency(value as number),
       },
-      { field: 'branchName', headerName: 'Branch', width: 140 },
-      { field: 'userName', headerName: 'User', width: 140 },
       {
-        field: 'status',
-        headerName: 'Status',
+        field: 'branch',
+        headerName: t('common.branch'),
+        width: 140,
+        valueFormatter: (value) => branchNameById.get(value as string) ?? (value as string),
+      },
+      { field: 'createdByName', headerName: t('common.user'), width: 140 },
+      {
+        field: 'approvalStatus',
+        headerName: t('common.status'),
         width: 130,
-        renderCell: (params) => <StatusChip status={params.row.status} />,
+        renderCell: (params) => <StatusChip status={params.row.approvalStatus} />,
       },
       {
         field: 'actions',
-        headerName: 'Actions',
+        headerName: t('common.actions'),
         width: 200,
         sortable: false,
         filterable: false,
         renderCell: (params) => {
-          const t = params.row;
-          const pendingApproval = t.status === 'Submitted' || t.status === 'Draft';
+          const row = params.row;
+          const pendingApproval =
+            row.approvalStatus === 'Submitted' || row.approvalStatus === 'Draft';
           return (
             <Stack direction="row" spacing={0.5}>
               {isManager && pendingApproval && (
                 <>
-                  <Tooltip title="Approve">
+                  <Tooltip title={t('transactions.approve')}>
                     <IconButton
                       size="small"
                       color="success"
-                      onClick={() => approveMut.mutate(t.id)}
+                      onClick={() => approveMut.mutate(row.id)}
                     >
                       <CheckCircleIcon fontSize="small" />
                     </IconButton>
                   </Tooltip>
-                  <Tooltip title="Reject">
+                  <Tooltip title={t('transactions.reject')}>
                     <IconButton
                       size="small"
                       color="error"
-                      onClick={() => setRejectTarget(t)}
+                      onClick={() => setRejectTarget(row)}
                     >
                       <CancelIcon fontSize="small" />
                     </IconButton>
                   </Tooltip>
                 </>
               )}
-              <Tooltip title={canEdit(t) ? 'Edit' : 'Approved items are locked'}>
+              <Tooltip title={canEdit(row) ? t('common.edit') : t('transactions.approvedLocked')}>
                 <span>
                   <IconButton
                     size="small"
-                    disabled={!canEdit(t)}
+                    disabled={!canEdit(row)}
                     onClick={() => {
-                      setEditing(t);
+                      setEditing(row);
                       setFormOpen(true);
                     }}
                   >
@@ -158,11 +171,11 @@ export default function Transactions() {
                 </span>
               </Tooltip>
               {isManager && (
-                <Tooltip title="Delete">
+                <Tooltip title={t('common.delete')}>
                   <IconButton
                     size="small"
                     color="error"
-                    onClick={() => setDeleteTarget(t)}
+                    onClick={() => setDeleteTarget(row)}
                   >
                     <DeleteIcon fontSize="small" />
                   </IconButton>
@@ -174,7 +187,7 @@ export default function Transactions() {
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isManager, approveMut],
+    [isManager, approveMut, branchNameById, t],
   );
 
   return (
@@ -186,7 +199,7 @@ export default function Transactions() {
         spacing={2}
         sx={{ mb: 3 }}
       >
-        <Typography variant="h5">Transactions</Typography>
+        <Typography variant="h5">{t('transactions.title')}</Typography>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
@@ -195,7 +208,7 @@ export default function Transactions() {
             setFormOpen(true);
           }}
         >
-          New Transaction
+          {t('transactions.newTransaction')}
         </Button>
       </Stack>
 
@@ -206,7 +219,7 @@ export default function Transactions() {
             <Grid item xs={12} sm={6} md={2}>
               <TextField
                 select
-                label="Type"
+                label={t('common.type')}
                 fullWidth
                 size="small"
                 value={filters.type ?? ''}
@@ -214,10 +227,10 @@ export default function Transactions() {
                   updateFilter({ type: (e.target.value || undefined) as TransactionType })
                 }
               >
-                <MenuItem value="">All</MenuItem>
-                {TYPES.map((t) => (
-                  <MenuItem key={t} value={t}>
-                    {t}
+                <MenuItem value="">{t('common.all')}</MenuItem>
+                {TYPES.map((type) => (
+                  <MenuItem key={type} value={type}>
+                    {t(`enums.type.${type}`)}
                   </MenuItem>
                 ))}
               </TextField>
@@ -225,7 +238,7 @@ export default function Transactions() {
             <Grid item xs={12} sm={6} md={2}>
               <TextField
                 select
-                label="Status"
+                label={t('common.status')}
                 fullWidth
                 size="small"
                 value={filters.status ?? ''}
@@ -233,10 +246,10 @@ export default function Transactions() {
                   updateFilter({ status: (e.target.value || undefined) as ApprovalStatus })
                 }
               >
-                <MenuItem value="">All</MenuItem>
+                <MenuItem value="">{t('common.all')}</MenuItem>
                 {STATUSES.map((s) => (
                   <MenuItem key={s} value={s}>
-                    {s}
+                    {t(`enums.status.${s}`)}
                   </MenuItem>
                 ))}
               </TextField>
@@ -244,13 +257,13 @@ export default function Transactions() {
             <Grid item xs={12} sm={6} md={2}>
               <TextField
                 select
-                label="Branch"
+                label={t('common.branch')}
                 fullWidth
                 size="small"
                 value={filters.branch ?? ''}
                 onChange={(e) => updateFilter({ branch: e.target.value || undefined })}
               >
-                <MenuItem value="">All</MenuItem>
+                <MenuItem value="">{t('common.all')}</MenuItem>
                 {branches.map((b) => (
                   <MenuItem key={b.id} value={b.id}>
                     {b.name}
@@ -260,7 +273,7 @@ export default function Transactions() {
             </Grid>
             <Grid item xs={12} sm={6} md={2}>
               <TextField
-                label="Category"
+                label={t('common.category')}
                 fullWidth
                 size="small"
                 value={filters.category ?? ''}
@@ -269,7 +282,7 @@ export default function Transactions() {
             </Grid>
             <Grid item xs={12} sm={6} md={2}>
               <TextField
-                label="From"
+                label={t('common.from')}
                 type="date"
                 fullWidth
                 size="small"
@@ -280,7 +293,7 @@ export default function Transactions() {
             </Grid>
             <Grid item xs={12} sm={6} md={2}>
               <TextField
-                label="To"
+                label={t('common.to')}
                 type="date"
                 fullWidth
                 size="small"
@@ -295,7 +308,7 @@ export default function Transactions() {
 
       {isError && (
         <Alert severity="error" sx={{ mb: 2 }}>
-          {getErrorMessage(error, 'Failed to load transactions')}
+          {getErrorMessage(error, t('transactions.failedToLoad'))}
         </Alert>
       )}
 
@@ -328,11 +341,12 @@ export default function Transactions() {
 
       <ConfirmDialog
         open={!!deleteTarget}
-        title="Delete transaction"
-        message={`Delete the ${deleteTarget?.type.toLowerCase()} of ${
-          deleteTarget ? formatCurrency(deleteTarget.amount) : ''
-        }? This cannot be undone.`}
-        confirmLabel="Delete"
+        title={t('transactions.deleteTitle')}
+        message={t('transactions.deleteMessage', {
+          type: deleteTarget ? t(`enums.type.${deleteTarget.type}`).toLowerCase() : '',
+          amount: deleteTarget ? formatCurrency(deleteTarget.amount) : '',
+        })}
+        confirmLabel={t('common.delete')}
         confirmColor="error"
         loading={deleteMut.isPending}
         onConfirm={async () => {
@@ -344,9 +358,9 @@ export default function Transactions() {
 
       <ConfirmDialog
         open={!!rejectTarget}
-        title="Reject transaction"
-        message="Reject this transaction? The submitter will be notified."
-        confirmLabel="Reject"
+        title={t('transactions.rejectTitle')}
+        message={t('transactions.rejectMessage')}
+        confirmLabel={t('transactions.reject')}
         confirmColor="error"
         loading={rejectMut.isPending}
         onConfirm={async () => {

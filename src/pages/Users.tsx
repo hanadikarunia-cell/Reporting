@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -29,17 +30,8 @@ import { useCreateUser, useUpdateUser, useUsers } from '@/hooks/useUsers';
 import type { User, UserInput, UserRole } from '@/types';
 import { getErrorMessage } from '@/utils/format';
 
-const schema = z.object({
-  email: z.string().min(1, 'Email is required').email('Enter a valid email'),
-  displayName: z.string().min(1, 'Name is required'),
-  role: z.enum(['Manager', 'User']),
-  assignedBranches: z.array(z.string()),
-  password: z.string().optional(),
-});
-
-type FormValues = z.infer<typeof schema>;
-
 export default function Users() {
+  const { t } = useTranslation();
   const { data: users = [], isLoading, isError, error } = useUsers();
   const { data: branches = [] } = useBranches();
   const createMut = useCreateUser();
@@ -47,6 +39,19 @@ export default function Users() {
 
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<User | null>(null);
+
+  const schema = useMemo(
+    () =>
+      z.object({
+        email: z.string().min(1, t('users.emailRequired')).email(t('users.emailInvalid')),
+        displayName: z.string().min(1, t('users.nameRequired')),
+        role: z.enum(['Manager', 'User']),
+        assignedBranches: z.array(z.string()),
+        password: z.string().optional(),
+      }),
+    [t],
+  );
+  type FormValues = z.infer<typeof schema>;
 
   const {
     control,
@@ -90,15 +95,15 @@ export default function Users() {
   };
 
   const columns: GridColDef<User>[] = [
-    { field: 'displayName', headerName: 'Name', flex: 1, minWidth: 160 },
-    { field: 'email', headerName: 'Email', flex: 1, minWidth: 200 },
+    { field: 'displayName', headerName: t('common.name'), flex: 1, minWidth: 160 },
+    { field: 'email', headerName: t('common.email'), flex: 1, minWidth: 200 },
     {
       field: 'role',
-      headerName: 'Role',
+      headerName: t('users.role'),
       width: 130,
       renderCell: (p) => (
         <Chip
-          label={p.row.role}
+          label={t(`enums.role.${p.row.role}`)}
           size="small"
           color={p.row.role === 'Manager' ? 'primary' : 'default'}
         />
@@ -106,13 +111,13 @@ export default function Users() {
     },
     {
       field: 'assignedBranches',
-      headerName: 'Branches',
+      headerName: t('users.branches'),
       flex: 1,
       minWidth: 160,
       valueGetter: (value) => (value as string[])?.length ?? 0,
       renderCell: (p) => (
         <Typography variant="body2">
-          {(p.row.assignedBranches ?? []).length} assigned
+          {(p.row.assignedBranches ?? []).length} {t('users.assigned')}
         </Typography>
       ),
     },
@@ -143,7 +148,7 @@ export default function Users() {
   return (
     <Box>
       <Stack direction="row" justifyContent="space-between" sx={{ mb: 3 }}>
-        <Typography variant="h5">Users</Typography>
+        <Typography variant="h5">{t('users.title')}</Typography>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
@@ -152,13 +157,13 @@ export default function Users() {
             setOpen(true);
           }}
         >
-          New User
+          {t('users.newUser')}
         </Button>
       </Stack>
 
       {isError && (
         <Alert severity="error" sx={{ mb: 2 }}>
-          {getErrorMessage(error, 'Failed to load users')}
+          {getErrorMessage(error, t('users.failedToLoad'))}
         </Alert>
       )}
 
@@ -174,7 +179,7 @@ export default function Users() {
       </Card>
 
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>{editing ? 'Edit User' : 'New User'}</DialogTitle>
+        <DialogTitle>{editing ? t('users.editUser') : t('users.newUser')}</DialogTitle>
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <DialogContent dividers>
             {serverError && (
@@ -185,7 +190,7 @@ export default function Users() {
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  label="Display name"
+                  label={t('users.displayName')}
                   fullWidth
                   {...register('displayName')}
                   error={!!errors.displayName}
@@ -194,7 +199,7 @@ export default function Users() {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  label="Email"
+                  label={t('common.email')}
                   type="email"
                   fullWidth
                   {...register('email')}
@@ -207,10 +212,10 @@ export default function Users() {
                   control={control}
                   name="role"
                   render={({ field }) => (
-                    <TextField {...field} select label="Role" fullWidth>
+                    <TextField {...field} select label={t('users.role')} fullWidth>
                       {(['Manager', 'User'] as UserRole[]).map((r) => (
                         <MenuItem key={r} value={r}>
-                          {r}
+                          {t(`enums.role.${r}`)}
                         </MenuItem>
                       ))}
                     </TextField>
@@ -219,7 +224,7 @@ export default function Users() {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  label={editing ? 'Reset password (optional)' : 'Password'}
+                  label={editing ? t('users.resetPasswordOptional') : t('common.password')}
                   type="password"
                   fullWidth
                   {...register('password')}
@@ -234,7 +239,7 @@ export default function Users() {
                   render={({ field }) => (
                     <TextField
                       select
-                      label="Assigned branches"
+                      label={t('users.assignedBranches')}
                       fullWidth
                       SelectProps={{
                         multiple: true,
@@ -264,10 +269,10 @@ export default function Users() {
           </DialogContent>
           <DialogActions sx={{ px: 3, py: 2 }}>
             <Button onClick={() => setOpen(false)} disabled={isSubmitting}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" variant="contained" disabled={isSubmitting}>
-              {isSubmitting ? 'Saving…' : 'Save'}
+              {isSubmitting ? t('common.saving') : t('common.save')}
             </Button>
           </DialogActions>
         </form>

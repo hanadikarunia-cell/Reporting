@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -20,18 +21,6 @@ import { useBranches } from '@/hooks/useBranches';
 import { useCreateTransaction, useUpdateTransaction } from '@/hooks/useTransactions';
 import type { Attachment, Transaction, TransactionInput } from '@/types';
 import { getErrorMessage } from '@/utils/format';
-
-const schema = z.object({
-  type: z.enum(['Income', 'Expense']),
-  category: z.string().min(1, 'Category is required').max(80),
-  amount: z.coerce.number().positive('Amount must be greater than zero'),
-  date: z.string().min(1, 'Date is required'),
-  branchId: z.string().min(1, 'Branch is required'),
-  description: z.string().max(500).optional(),
-  reference: z.string().max(100).optional(),
-});
-
-type FormValues = z.infer<typeof schema>;
 
 const CATEGORIES = [
   'Sales',
@@ -58,12 +47,27 @@ function todayIso() {
 }
 
 export default function TransactionFormDialog({ open, transaction, onClose }: Props) {
+  const { t } = useTranslation();
   const isEdit = !!transaction;
   const { data: branches = [] } = useBranches();
   const createMut = useCreateTransaction();
   const updateMut = useUpdateTransaction();
 
   const [attachments, setAttachments] = useState<Attachment[]>([]);
+
+  const schema = useMemo(
+    () =>
+      z.object({
+        type: z.enum(['Income', 'Expense']),
+        category: z.string().min(1, t('transactionForm.categoryRequired')).max(80),
+        amount: z.coerce.number().positive(t('transactionForm.amountPositive')),
+        date: z.string().min(1, t('transactionForm.dateRequired')),
+        branch: z.string().min(1, t('transactionForm.branchRequired')),
+        description: z.string().max(500).optional(),
+      }),
+    [t],
+  );
+  type FormValues = z.infer<typeof schema>;
 
   const {
     control,
@@ -78,9 +82,8 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
       category: '',
       amount: 0,
       date: todayIso(),
-      branchId: '',
+      branch: '',
       description: '',
-      reference: '',
     },
   });
 
@@ -93,21 +96,21 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
             category: transaction.category,
             amount: transaction.amount,
             date: transaction.date.slice(0, 10),
-            branchId: transaction.branchId,
+            branch: transaction.branch,
             description: transaction.description ?? '',
-            reference: transaction.reference ?? '',
           }
         : {
             type: 'Expense',
             category: '',
             amount: 0,
             date: todayIso(),
-            branchId: branches[0]?.id ?? '',
+            branch: branches[0]?.id ?? '',
             description: '',
-            reference: '',
           },
     );
-    setAttachments(transaction?.attachments ?? []);
+    // The API only returns attachment IDs on a transaction, not full file
+    // metadata, so previously-attached files can't be shown here when editing.
+    setAttachments([]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, transaction, branches.length]);
 
@@ -120,7 +123,6 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
     const payload: TransactionInput = {
       ...values,
       description: values.description || undefined,
-      reference: values.reference || undefined,
       attachmentIds: attachments.map((a) => a.id),
     };
     if (isEdit && transaction) {
@@ -133,7 +135,9 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{isEdit ? 'Edit Transaction' : 'New Transaction'}</DialogTitle>
+      <DialogTitle>
+        {isEdit ? t('transactionForm.editTransaction') : t('transactionForm.newTransaction')}
+      </DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <DialogContent dividers>
           {serverError && (
@@ -150,13 +154,13 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
                   <TextField
                     {...field}
                     select
-                    label="Type"
+                    label={t('common.type')}
                     fullWidth
                     error={!!errors.type}
                     helperText={errors.type?.message}
                   >
-                    <MenuItem value="Income">Income</MenuItem>
-                    <MenuItem value="Expense">Expense</MenuItem>
+                    <MenuItem value="Income">{t('transactionForm.income')}</MenuItem>
+                    <MenuItem value="Expense">{t('transactionForm.expense')}</MenuItem>
                   </TextField>
                 )}
               />
@@ -169,14 +173,14 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
                   <TextField
                     {...field}
                     select
-                    label="Category"
+                    label={t('common.category')}
                     fullWidth
                     error={!!errors.category}
                     helperText={errors.category?.message}
                   >
                     {CATEGORIES.map((c) => (
                       <MenuItem key={c} value={c}>
-                        {c}
+                        {t(`enums.category.${c}`)}
                       </MenuItem>
                     ))}
                   </TextField>
@@ -185,7 +189,7 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-                label="Amount"
+                label={t('common.amount')}
                 type="number"
                 fullWidth
                 inputProps={{ step: '0.01', min: '0' }}
@@ -199,7 +203,7 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-                label="Date"
+                label={t('common.date')}
                 type="date"
                 fullWidth
                 InputLabelProps={{ shrink: true }}
@@ -211,19 +215,19 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
             <Grid item xs={12}>
               <Controller
                 control={control}
-                name="branchId"
+                name="branch"
                 render={({ field }) => (
                   <TextField
                     {...field}
                     select
-                    label="Branch"
+                    label={t('common.branch')}
                     fullWidth
-                    error={!!errors.branchId}
-                    helperText={errors.branchId?.message}
+                    error={!!errors.branch}
+                    helperText={errors.branch?.message}
                   >
                     {branches.length === 0 && (
                       <MenuItem value="" disabled>
-                        No branches available
+                        {t('transactionForm.noBranchesAvailable')}
                       </MenuItem>
                     )}
                     {branches.map((b) => (
@@ -237,16 +241,7 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
             </Grid>
             <Grid item xs={12}>
               <TextField
-                label="Reference"
-                fullWidth
-                {...register('reference')}
-                error={!!errors.reference}
-                helperText={errors.reference?.message}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                label="Description"
+                label={t('transactionForm.description')}
                 fullWidth
                 multiline
                 minRows={2}
@@ -257,7 +252,7 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
             </Grid>
             <Grid item xs={12}>
               <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                Attachments
+                {t('transactionForm.attachments')}
               </Typography>
               <FileUpload attachments={attachments} onChange={setAttachments} />
             </Grid>
@@ -265,10 +260,14 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
         </DialogContent>
         <DialogActions sx={{ px: 3, py: 2 }}>
           <Button onClick={onClose} disabled={isSubmitting}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button type="submit" variant="contained" disabled={isSubmitting}>
-            {isSubmitting ? 'Saving…' : isEdit ? 'Save Changes' : 'Create'}
+            {isSubmitting
+              ? t('common.saving')
+              : isEdit
+                ? t('transactionForm.saveChanges')
+                : t('common.create')}
           </Button>
         </DialogActions>
       </form>

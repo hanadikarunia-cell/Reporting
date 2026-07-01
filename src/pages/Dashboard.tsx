@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -41,6 +42,7 @@ import type { Transaction } from '@/types';
 const PIE_COLORS = ['#1976d2', '#00897b', '#ed6c02', '#9c27b0', '#d32f2f', '#0288d1'];
 
 export default function Dashboard() {
+  const { t } = useTranslation();
   const theme = useTheme();
   const { data, isLoading, isError, error } = useDashboard();
 
@@ -49,34 +51,36 @@ export default function Dashboard() {
   const recentColumns: GridColDef<Transaction>[] = [
     {
       field: 'date',
-      headerName: 'Date',
+      headerName: t('common.date'),
       width: 130,
       valueFormatter: (value) => formatDate(value as string),
     },
     {
       field: 'type',
-      headerName: 'Type',
+      headerName: t('common.type'),
       width: 120,
       renderCell: (params) => <TypeChip type={params.row.type} />,
     },
-    { field: 'category', headerName: 'Category', flex: 1, minWidth: 140 },
+    { field: 'category', headerName: t('common.category'), flex: 1, minWidth: 140 },
     {
       field: 'amount',
-      headerName: 'Amount',
+      headerName: t('common.amount'),
       width: 140,
       valueFormatter: (value) => formatCurrency(value as number),
     },
     {
-      field: 'status',
-      headerName: 'Status',
+      field: 'approvalStatus',
+      headerName: t('common.status'),
       width: 130,
-      renderCell: (params) => <StatusChip status={params.row.status} />,
+      renderCell: (params) => <StatusChip status={params.row.approvalStatus} />,
     },
   ];
 
-  if (isLoading) return <LoadingSpinner label="Loading dashboard…" fullHeight />;
+  if (isLoading) return <LoadingSpinner label={t('dashboard.loadingDashboard')} fullHeight />;
   if (isError)
-    return <Alert severity="error">{getErrorMessage(error, 'Failed to load dashboard')}</Alert>;
+    return (
+      <Alert severity="error">{getErrorMessage(error, t('dashboard.failedToLoad'))}</Alert>
+    );
   if (!data) return null;
 
   return (
@@ -84,7 +88,7 @@ export default function Dashboard() {
       <Grid container spacing={3}>
         <Grid item xs={12} sm={6} lg={3}>
           <StatCard
-            title="Total Income"
+            title={t('dashboard.totalIncome')}
             value={formatCurrency(data.totalIncome)}
             icon={<TrendingUpIcon />}
             color="success"
@@ -92,7 +96,7 @@ export default function Dashboard() {
         </Grid>
         <Grid item xs={12} sm={6} lg={3}>
           <StatCard
-            title="Total Expenses"
+            title={t('dashboard.totalExpenses')}
             value={formatCurrency(data.totalExpense)}
             icon={<TrendingDownIcon />}
             color="warning"
@@ -100,7 +104,7 @@ export default function Dashboard() {
         </Grid>
         <Grid item xs={12} sm={6} lg={3}>
           <StatCard
-            title="Balance"
+            title={t('dashboard.balance')}
             value={formatCurrency(data.netBalance)}
             icon={<AccountBalanceIcon />}
             color="primary"
@@ -108,7 +112,7 @@ export default function Dashboard() {
         </Grid>
         <Grid item xs={12} sm={6} lg={3}>
           <StatCard
-            title="Net Profit"
+            title={t('dashboard.netProfit')}
             value={formatCurrency(data.netBalance)}
             icon={<SavingsIcon />}
             color={data.netBalance >= 0 ? 'info' : 'error'}
@@ -118,7 +122,7 @@ export default function Dashboard() {
         {/* Monthly income vs expense */}
         <Grid item xs={12} lg={8}>
           <Card sx={{ height: '100%' }}>
-            <CardHeader title="Income vs Expense (Monthly)" />
+            <CardHeader title={t('dashboard.incomeVsExpense')} />
             <CardContent>
               <Box sx={{ width: '100%', height: 320 }}>
                 <ResponsiveContainer>
@@ -137,14 +141,14 @@ export default function Dashboard() {
                     <Legend />
                     <Bar
                       dataKey="income"
-                      name="Income"
+                      name={t('enums.type.Income')}
                       fill={theme.palette.success.main}
                       radius={[4, 4, 0, 0]}
                       barSize={22}
                     />
                     <Bar
                       dataKey="expense"
-                      name="Expense"
+                      name={t('enums.type.Expense')}
                       fill={theme.palette.warning.main}
                       radius={[4, 4, 0, 0]}
                       barSize={22}
@@ -152,7 +156,7 @@ export default function Dashboard() {
                     <Line
                       type="monotone"
                       dataKey="income"
-                      name="Income trend"
+                      name={t('enums.type.Income')}
                       stroke={theme.palette.primary.main}
                       strokeWidth={2}
                       dot={false}
@@ -167,11 +171,11 @@ export default function Dashboard() {
         {/* Top categories pie */}
         <Grid item xs={12} lg={4}>
           <Card sx={{ height: '100%' }}>
-            <CardHeader title="Top Categories" />
+            <CardHeader title={t('dashboard.topCategories')} />
             <CardContent>
               <Box sx={{ width: '100%', height: 320 }}>
                 {data.topCategories.length === 0 ? (
-                  <Typography color="text.secondary">No data available.</Typography>
+                  <Typography color="text.secondary">{t('common.noDataAvailable')}</Typography>
                 ) : (
                   <ResponsiveContainer>
                     <PieChart>
@@ -200,7 +204,7 @@ export default function Dashboard() {
         {/* Expense breakdown bar (secondary chart to satisfy bar+line requirement) */}
         <Grid item xs={12} lg={4}>
           <Card sx={{ height: '100%' }}>
-            <CardHeader title="Expense by Month" />
+            <CardHeader title={t('dashboard.expenseByMonth')} />
             <CardContent>
               <Box sx={{ width: '100%', height: 260 }}>
                 <ResponsiveContainer>
@@ -211,7 +215,7 @@ export default function Dashboard() {
                     <RTooltip formatter={(v: number) => formatCurrency(v)} />
                     <Bar
                       dataKey="expense"
-                      name="Expense"
+                      name={t('enums.type.Expense')}
                       fill={theme.palette.warning.main}
                       radius={[4, 4, 0, 0]}
                     />
@@ -225,7 +229,7 @@ export default function Dashboard() {
         {/* Recent transactions */}
         <Grid item xs={12} lg={8}>
           <Card sx={{ height: '100%' }}>
-            <CardHeader title="Recent Transactions" />
+            <CardHeader title={t('dashboard.recentTransactions')} />
             <CardContent>
               <DataTable
                 rows={data.recent}

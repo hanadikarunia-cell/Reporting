@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -21,14 +22,8 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { useAuth } from '@/context/AuthContext';
 import { getErrorMessage } from '@/utils/format';
 
-const schema = z.object({
-  email: z.string().min(1, 'Email is required').email('Enter a valid email'),
-  password: z.string().min(1, 'Password is required'),
-});
-
-type LoginForm = z.infer<typeof schema>;
-
 export default function Login() {
+  const { t } = useTranslation();
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -36,6 +31,16 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
 
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname ?? '/';
+
+  const schema = useMemo(
+    () =>
+      z.object({
+        email: z.string().min(1, t('login.emailRequired')).email(t('login.emailInvalid')),
+        password: z.string().min(1, t('login.passwordRequired')),
+      }),
+    [t],
+  );
+  type LoginForm = z.infer<typeof schema>;
 
   const {
     register,
@@ -52,7 +57,7 @@ export default function Login() {
       await login(values);
       navigate(from, { replace: true });
     } catch (err) {
-      setServerError(getErrorMessage(err, 'Invalid email or password'));
+      setServerError(getErrorMessage(err, t('login.invalidCredentials')));
     }
   };
 
@@ -74,9 +79,9 @@ export default function Login() {
         <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
           <Stack alignItems="center" spacing={1} sx={{ mb: 3 }}>
             <AccountBalanceWalletIcon color="primary" sx={{ fontSize: 44 }} />
-            <Typography variant="h5">Finance Ledger Pro</Typography>
+            <Typography variant="h5">{t('nav.appName')}</Typography>
             <Typography variant="body2" color="text.secondary">
-              Sign in to your account
+              {t('login.subtitle')}
             </Typography>
           </Stack>
 
@@ -89,7 +94,7 @@ export default function Login() {
           <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
             <Stack spacing={2.5}>
               <TextField
-                label="Email"
+                label={t('common.email')}
                 type="email"
                 fullWidth
                 autoComplete="email"
@@ -99,7 +104,7 @@ export default function Login() {
                 helperText={errors.email?.message}
               />
               <TextField
-                label="Password"
+                label={t('common.password')}
                 type={showPassword ? 'text' : 'password'}
                 fullWidth
                 autoComplete="current-password"
@@ -112,7 +117,7 @@ export default function Login() {
                       <IconButton
                         onClick={() => setShowPassword((s) => !s)}
                         edge="end"
-                        aria-label="toggle password visibility"
+                        aria-label={t('login.togglePasswordVisibility')}
                       >
                         {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
@@ -127,7 +132,7 @@ export default function Login() {
                 fullWidth
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Signing in…' : 'Sign In'}
+                {isSubmitting ? t('login.signingIn') : t('login.signIn')}
               </Button>
             </Stack>
           </Box>

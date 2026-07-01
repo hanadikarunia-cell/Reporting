@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -14,6 +15,7 @@ import type { AuditLog, AuditLogFilters } from '@/types';
 import { formatDateTime, getErrorMessage } from '@/utils/format';
 
 export default function AuditLogs() {
+  const { t } = useTranslation();
   const [filters, setFilters] = useState<AuditLogFilters>({ page: 1, pageSize: 25 });
   const { data, isLoading, isFetching, isError, error } = useAuditLogs(filters);
 
@@ -25,22 +27,22 @@ export default function AuditLogs() {
   const columns: GridColDef<AuditLog>[] = [
     {
       field: 'timestamp',
-      headerName: 'Timestamp',
+      headerName: t('auditLogs.timestamp'),
       width: 200,
       valueFormatter: (v) => formatDateTime(v as string),
     },
-    { field: 'userName', headerName: 'User', width: 160 },
-    { field: 'action', headerName: 'Action', width: 140 },
-    { field: 'entity', headerName: 'Entity', width: 140 },
-    { field: 'entityId', headerName: 'Entity ID', width: 160 },
-    { field: 'details', headerName: 'Details', flex: 1, minWidth: 200 },
-    { field: 'ipAddress', headerName: 'IP', width: 140 },
+    { field: 'userName', headerName: t('common.user'), width: 160 },
+    { field: 'action', headerName: t('auditLogs.action'), width: 140 },
+    { field: 'entity', headerName: t('auditLogs.entity'), width: 140 },
+    { field: 'entityId', headerName: t('auditLogs.entityId'), width: 160 },
+    { field: 'details', headerName: t('auditLogs.details'), flex: 1, minWidth: 200 },
+    { field: 'ipAddress', headerName: t('auditLogs.ip'), width: 140 },
   ];
 
   return (
     <Box>
       <Typography variant="h5" sx={{ mb: 3 }}>
-        Audit Logs
+        {t('auditLogs.title')}
       </Typography>
 
       <Card sx={{ mb: 3 }}>
@@ -48,7 +50,7 @@ export default function AuditLogs() {
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} md={3}>
               <TextField
-                label="Action"
+                label={t('auditLogs.action')}
                 fullWidth
                 size="small"
                 value={filters.action ?? ''}
@@ -59,7 +61,7 @@ export default function AuditLogs() {
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <TextField
-                label="Entity"
+                label={t('auditLogs.entity')}
                 fullWidth
                 size="small"
                 value={filters.entity ?? ''}
@@ -70,7 +72,7 @@ export default function AuditLogs() {
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <TextField
-                label="From"
+                label={t('common.from')}
                 type="date"
                 fullWidth
                 size="small"
@@ -83,7 +85,7 @@ export default function AuditLogs() {
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <TextField
-                label="To"
+                label={t('common.to')}
                 type="date"
                 fullWidth
                 size="small"
@@ -100,7 +102,7 @@ export default function AuditLogs() {
 
       {isError && (
         <Alert severity="error" sx={{ mb: 2 }}>
-          {getErrorMessage(error, 'Failed to load audit logs')}
+          {getErrorMessage(error, t('auditLogs.failedToLoad'))}
         </Alert>
       )}
 

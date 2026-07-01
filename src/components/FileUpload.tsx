@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
@@ -23,6 +24,7 @@ export default function FileUpload({
   accept = '.pdf,.png,.jpg,.jpeg,.xlsx,.csv,.doc,.docx',
   disabled,
 }: FileUploadProps) {
+  const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
   const [progress, setProgress] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +36,7 @@ export default function FileUpload({
       const uploaded = await filesApi.upload(file, setProgress);
       onChange([...attachments, uploaded]);
     } catch (err) {
-      setError(getErrorMessage(err, 'Upload failed'));
+      setError(getErrorMessage(err, t('transactionForm.uploadFailed')));
     } finally {
       setProgress(null);
     }
@@ -64,7 +66,7 @@ export default function FileUpload({
         disabled={disabled || progress !== null}
         size="small"
       >
-        Attach file
+        {t('transactionForm.attachFile')}
       </Button>
 
       {progress !== null && (

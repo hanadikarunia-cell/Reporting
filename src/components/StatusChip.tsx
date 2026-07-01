@@ -1,4 +1,5 @@
 import Chip from '@mui/material/Chip';
+import { useTranslation } from 'react-i18next';
 import type { ApprovalStatus, TransactionType } from '@/types';
 
 const STATUS_COLOR: Record<
@@ -12,13 +13,22 @@ const STATUS_COLOR: Record<
 };
 
 export function StatusChip({ status }: { status: ApprovalStatus }) {
-  return <Chip label={status} color={STATUS_COLOR[status]} size="small" variant="filled" />;
+  const { t } = useTranslation();
+  return (
+    <Chip
+      label={t(`enums.status.${status}`)}
+      color={STATUS_COLOR[status]}
+      size="small"
+      variant="filled"
+    />
+  );
 }
 
 export function TypeChip({ type }: { type: TransactionType }) {
+  const { t } = useTranslation();
   return (
     <Chip
-      label={type}
+      label={t(`enums.type.${type}`)}
       color={type === 'Income' ? 'success' : 'warning'}
       size="small"
       variant="outlined"

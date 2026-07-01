@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link as RouterLink, useLocation, useNavigate } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Avatar from '@mui/material/Avatar';
@@ -34,28 +35,30 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 
 import { useAuth } from '@/context/AuthContext';
 import { useColorMode } from '@/context/ThemeContext';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 import type { UserRole } from '@/types';
 
 const DRAWER_WIDTH = 248;
 
 interface NavItem {
-  label: string;
+  labelKey: string;
   to: string;
   icon: ReactNode;
   roles?: UserRole[];
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Dashboard', to: '/', icon: <DashboardIcon /> },
-  { label: 'Transactions', to: '/transactions', icon: <ReceiptLongIcon /> },
-  { label: 'Reports', to: '/reports', icon: <AssessmentIcon /> },
-  { label: 'Users', to: '/users', icon: <PeopleIcon />, roles: ['Manager'] },
-  { label: 'Branches', to: '/branches', icon: <StoreIcon />, roles: ['Manager'] },
-  { label: 'Audit Logs', to: '/audit-logs', icon: <HistoryIcon />, roles: ['Manager'] },
-  { label: 'Settings', to: '/settings', icon: <SettingsIcon /> },
+  { labelKey: 'nav.dashboard', to: '/', icon: <DashboardIcon /> },
+  { labelKey: 'nav.transactions', to: '/transactions', icon: <ReceiptLongIcon /> },
+  { labelKey: 'nav.reports', to: '/reports', icon: <AssessmentIcon /> },
+  { labelKey: 'nav.users', to: '/users', icon: <PeopleIcon />, roles: ['Manager'] },
+  { labelKey: 'nav.branches', to: '/branches', icon: <StoreIcon />, roles: ['Manager'] },
+  { labelKey: 'nav.auditLogs', to: '/audit-logs', icon: <HistoryIcon />, roles: ['Manager'] },
+  { labelKey: 'nav.settings', to: '/settings', icon: <SettingsIcon /> },
 ];
 
 export default function Layout({ children }: { children: ReactNode }) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const { mode, toggleColorMode } = useColorMode();
@@ -81,7 +84,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       <Toolbar sx={{ gap: 1.5 }}>
         <AccountBalanceWalletIcon color="primary" />
         <Typography variant="h6" noWrap fontWeight={700}>
-          Ledger Pro
+          {t('nav.brandShort')}
         </Typography>
       </Toolbar>
       <Divider />
@@ -101,7 +104,7 @@ export default function Layout({ children }: { children: ReactNode }) {
                 sx={{ borderRadius: 2 }}
               >
                 <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.label} />
+                <ListItemText primary={t(item.labelKey)} />
               </ListItemButton>
             </ListItem>
           );
@@ -110,7 +113,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       <Divider />
       <Box sx={{ p: 2 }}>
         <Typography variant="caption" color="text.secondary">
-          Finance Ledger Pro v1.0
+          {t('nav.version')}
         </Typography>
       </Box>
     </Box>
@@ -135,23 +138,27 @@ export default function Layout({ children }: { children: ReactNode }) {
             edge="start"
             onClick={() => setMobileOpen((o) => !o)}
             sx={{ mr: 2, display: { md: 'none' } }}
-            aria-label="open navigation"
+            aria-label={t('layout.openNavigation')}
           >
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" sx={{ flexGrow: 1 }} noWrap>
-            {visibleItems.find((i) =>
-              i.to === '/' ? location.pathname === '/' : location.pathname.startsWith(i.to),
-            )?.label ?? 'Finance Ledger Pro'}
+            {t(
+              visibleItems.find((i) =>
+                i.to === '/' ? location.pathname === '/' : location.pathname.startsWith(i.to),
+              )?.labelKey ?? 'nav.appName',
+            )}
           </Typography>
 
-          <Tooltip title={mode === 'light' ? 'Dark mode' : 'Light mode'}>
-            <IconButton onClick={toggleColorMode} aria-label="toggle color mode">
+          <LanguageSwitcher />
+
+          <Tooltip title={mode === 'light' ? t('layout.darkMode') : t('layout.lightMode')}>
+            <IconButton onClick={toggleColorMode} aria-label={t('layout.toggleColorMode')}>
               {mode === 'light' ? <DarkModeIcon /> : <LightModeIcon />}
             </IconButton>
           </Tooltip>
 
-          <Tooltip title="Account">
+          <Tooltip title={t('layout.account')}>
             <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} sx={{ ml: 1 }}>
               <Avatar sx={{ width: 34, height: 34, bgcolor: 'primary.main' }}>
                 {user?.displayName?.charAt(0)?.toUpperCase() ?? 'U'}
@@ -181,13 +188,13 @@ export default function Layout({ children }: { children: ReactNode }) {
               <ListItemIcon>
                 <SettingsIcon fontSize="small" />
               </ListItemIcon>
-              Settings
+              {t('layout.settings')}
             </MenuItem>
             <MenuItem onClick={handleLogout}>
               <ListItemIcon>
                 <LogoutIcon fontSize="small" />
               </ListItemIcon>
-              Logout
+              {t('layout.logout')}
             </MenuItem>
           </Menu>
         </Toolbar>

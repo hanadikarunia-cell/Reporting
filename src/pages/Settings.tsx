@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -11,6 +13,7 @@ import CardHeader from '@mui/material/CardHeader';
 import Divider from '@mui/material/Divider';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
+import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
@@ -19,28 +22,36 @@ import Typography from '@mui/material/Typography';
 import { useAuth } from '@/context/AuthContext';
 import { useColorMode } from '@/context/ThemeContext';
 
-const profileSchema = z.object({
-  displayName: z.string().min(1, 'Name is required'),
-  email: z.string().email(),
-});
-
-const passwordSchema = z
-  .object({
-    currentPassword: z.string().min(1, 'Current password is required'),
-    newPassword: z.string().min(8, 'Password must be at least 8 characters'),
-    confirmPassword: z.string().min(1, 'Please confirm your password'),
-  })
-  .refine((v) => v.newPassword === v.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
-  });
-
-type ProfileForm = z.infer<typeof profileSchema>;
-type PasswordForm = z.infer<typeof passwordSchema>;
-
 export default function Settings() {
+  const { t, i18n } = useTranslation();
   const { user, updateUser } = useAuth();
   const { mode, toggleColorMode } = useColorMode();
+
+  const profileSchema = useMemo(
+    () =>
+      z.object({
+        displayName: z.string().min(1, t('settings.nameRequired')),
+        email: z.string().email(),
+      }),
+    [t],
+  );
+  type ProfileForm = z.infer<typeof profileSchema>;
+
+  const passwordSchema = useMemo(
+    () =>
+      z
+        .object({
+          currentPassword: z.string().min(1, t('settings.currentPasswordRequired')),
+          newPassword: z.string().min(8, t('settings.passwordMinLength')),
+          confirmPassword: z.string().min(1, t('settings.confirmPasswordRequired')),
+        })
+        .refine((v) => v.newPassword === v.confirmPassword, {
+          message: t('settings.passwordsDoNotMatch'),
+          path: ['confirmPassword'],
+        }),
+    [t],
+  );
+  type PasswordForm = z.infer<typeof passwordSchema>;
 
   const profileForm = useForm<ProfileForm>({
     resolver: zodResolver(profileSchema),
@@ -67,21 +78,21 @@ export default function Settings() {
   return (
     <Box>
       <Typography variant="h5" sx={{ mb: 3 }}>
-        Settings
+        {t('settings.title')}
       </Typography>
 
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <Card>
-            <CardHeader title="Appearance" />
+            <CardHeader title={t('settings.appearance')} />
             <Divider />
             <CardContent>
               <FormControlLabel
                 control={<Switch checked={mode === 'dark'} onChange={toggleColorMode} />}
-                label="Dark mode"
+                label={t('settings.darkMode')}
               />
               <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                Your theme preference is saved to this browser.
+                {t('settings.themeSaved')}
               </Typography>
             </CardContent>
           </Card>
@@ -89,7 +100,29 @@ export default function Settings() {
 
         <Grid item xs={12} md={6}>
           <Card>
-            <CardHeader title="Profile" />
+            <CardHeader title={t('settings.language')} />
+            <Divider />
+            <CardContent>
+              <TextField
+                select
+                label={t('settings.language')}
+                value={i18n.resolvedLanguage}
+                onChange={(e) => void i18n.changeLanguage(e.target.value)}
+                sx={{ minWidth: 220 }}
+              >
+                <MenuItem value="en">English</MenuItem>
+                <MenuItem value="id">Bahasa Indonesia</MenuItem>
+              </TextField>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                {t('settings.languageSaved')}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardHeader title={t('settings.profile')} />
             <Divider />
             <CardContent>
               <Box
@@ -99,21 +132,21 @@ export default function Settings() {
               >
                 <Stack spacing={2}>
                   <TextField
-                    label="Display name"
+                    label={t('users.displayName')}
                     fullWidth
                     {...profileForm.register('displayName')}
                     error={!!profileForm.formState.errors.displayName}
                     helperText={profileForm.formState.errors.displayName?.message}
                   />
                   <TextField
-                    label="Email"
+                    label={t('common.email')}
                     fullWidth
                     disabled
                     {...profileForm.register('email')}
                   />
                   <Box>
                     <Button type="submit" variant="contained">
-                      Save Profile
+                      {t('settings.saveProfile')}
                     </Button>
                   </Box>
                 </Stack>
@@ -124,12 +157,12 @@ export default function Settings() {
 
         <Grid item xs={12} md={6}>
           <Card>
-            <CardHeader title="Change Password" />
+            <CardHeader title={t('settings.changePassword')} />
             <Divider />
             <CardContent>
               {passwordForm.formState.isSubmitSuccessful && (
                 <Alert severity="success" sx={{ mb: 2 }}>
-                  Password change requested.
+                  {t('settings.passwordChangeRequested')}
                 </Alert>
               )}
               <Box
@@ -139,7 +172,7 @@ export default function Settings() {
               >
                 <Stack spacing={2}>
                   <TextField
-                    label="Current password"
+                    label={t('settings.currentPassword')}
                     type="password"
                     fullWidth
                     {...passwordForm.register('currentPassword')}
@@ -147,7 +180,7 @@ export default function Settings() {
                     helperText={passwordForm.formState.errors.currentPassword?.message}
                   />
                   <TextField
-                    label="New password"
+                    label={t('settings.newPassword')}
                     type="password"
                     fullWidth
                     {...passwordForm.register('newPassword')}
@@ -155,7 +188,7 @@ export default function Settings() {
                     helperText={passwordForm.formState.errors.newPassword?.message}
                   />
                   <TextField
-                    label="Confirm new password"
+                    label={t('settings.confirmNewPassword')}
                     type="password"
                     fullWidth
                     {...passwordForm.register('confirmPassword')}
@@ -164,7 +197,7 @@ export default function Settings() {
                   />
                   <Box>
                     <Button type="submit" variant="contained">
-                      Update Password
+                      {t('settings.updatePassword')}
                     </Button>
                   </Box>
                 </Stack>

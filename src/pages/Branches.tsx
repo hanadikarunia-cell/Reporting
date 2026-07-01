@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -24,18 +25,22 @@ import { useBranches, useCreateBranch } from '@/hooks/useBranches';
 import type { Branch, BranchInput } from '@/types';
 import { getErrorMessage } from '@/utils/format';
 
-const schema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  code: z.string().min(1, 'Code is required').max(20),
-  address: z.string().optional(),
-});
-
-type FormValues = z.infer<typeof schema>;
-
 export default function Branches() {
+  const { t } = useTranslation();
   const { data: branches = [], isLoading, isError, error } = useBranches();
   const createMut = useCreateBranch();
   const [open, setOpen] = useState(false);
+
+  const schema = useMemo(
+    () =>
+      z.object({
+        name: z.string().min(1, t('branches.nameRequired')),
+        code: z.string().min(1, t('branches.codeRequired')).max(20),
+        address: z.string().optional(),
+      }),
+    [t],
+  );
+  type FormValues = z.infer<typeof schema>;
 
   const {
     register,
@@ -62,23 +67,23 @@ export default function Branches() {
   };
 
   const columns: GridColDef<Branch>[] = [
-    { field: 'name', headerName: 'Name', flex: 1, minWidth: 180 },
-    { field: 'code', headerName: 'Code', width: 140 },
-    { field: 'address', headerName: 'Address', flex: 1, minWidth: 200 },
+    { field: 'name', headerName: t('common.name'), flex: 1, minWidth: 180 },
+    { field: 'code', headerName: t('branches.code'), width: 140 },
+    { field: 'address', headerName: t('branches.address'), flex: 1, minWidth: 200 },
   ];
 
   return (
     <Box>
       <Stack direction="row" justifyContent="space-between" sx={{ mb: 3 }}>
-        <Typography variant="h5">Branches</Typography>
+        <Typography variant="h5">{t('branches.title')}</Typography>
         <Button variant="contained" startIcon={<AddIcon />} onClick={() => setOpen(true)}>
-          New Branch
+          {t('branches.newBranch')}
         </Button>
       </Stack>
 
       {isError && (
         <Alert severity="error" sx={{ mb: 2 }}>
-          {getErrorMessage(error, 'Failed to load branches')}
+          {getErrorMessage(error, t('branches.failedToLoad'))}
         </Alert>
       )}
 
@@ -94,7 +99,7 @@ export default function Branches() {
       </Card>
 
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="xs" fullWidth>
-        <DialogTitle>New Branch</DialogTitle>
+        <DialogTitle>{t('branches.newBranch')}</DialogTitle>
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <DialogContent dividers>
             {createMut.isError && (
@@ -105,7 +110,7 @@ export default function Branches() {
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
-                  label="Name"
+                  label={t('common.name')}
                   fullWidth
                   {...register('name')}
                   error={!!errors.name}
@@ -114,7 +119,7 @@ export default function Branches() {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  label="Code"
+                  label={t('branches.code')}
                   fullWidth
                   {...register('code')}
                   error={!!errors.code}
@@ -123,7 +128,7 @@ export default function Branches() {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  label="Address"
+                  label={t('branches.address')}
                   fullWidth
                   multiline
                   minRows={2}
@@ -134,10 +139,10 @@ export default function Branches() {
           </DialogContent>
           <DialogActions sx={{ px: 3, py: 2 }}>
             <Button onClick={() => setOpen(false)} disabled={isSubmitting}>
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" variant="contained" disabled={isSubmitting}>
-              {isSubmitting ? 'Saving…' : 'Create'}
+              {isSubmitting ? t('common.saving') : t('common.create')}
             </Button>
           </DialogActions>
         </form>

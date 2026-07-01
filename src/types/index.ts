@@ -16,7 +16,8 @@ export interface User {
 export interface AuthResponse {
   accessToken: string;
   refreshToken: string;
-  expiresIn: number;
+  expiresAt: string;
+  tokenType: string;
   user: User;
 }
 
@@ -49,29 +50,26 @@ export interface Transaction {
   id: string;
   type: TransactionType;
   category: string;
-  amount: number;
-  currency?: string;
   description?: string;
+  amount: number;
   date: string; // ISO date
-  branchId: string;
-  branchName?: string;
-  userId: string;
-  userName?: string;
-  status: ApprovalStatus;
-  reference?: string;
-  attachments?: Attachment[];
-  createdAt?: string;
-  updatedAt?: string;
+  branch: string; // branchId
+  createdBy: string; // userId
+  createdByName: string;
+  createdDate: string;
+  approvalStatus: ApprovalStatus;
+  approvedBy?: string;
+  approvedDate?: string;
+  attachmentIds: string[];
 }
 
 export interface TransactionInput {
   type: TransactionType;
   category: string;
-  amount: number;
   description?: string;
+  amount: number;
   date: string;
-  branchId: string;
-  reference?: string;
+  branch: string; // branchId
   attachmentIds?: string[];
 }
 
@@ -130,18 +128,17 @@ export interface ReportFilters {
 
 export type ReportPeriod = 'daily' | 'monthly' | 'yearly';
 
-export interface ReportRow {
-  period: string;
-  income: number;
-  expense: number;
-  net: number;
-}
-
 export interface ReportResult {
-  rows: ReportRow[];
+  period: string;
+  from: string;
+  to: string;
   totalIncome: number;
   totalExpense: number;
-  net: number;
+  netBalance: number;
+  transactionCount: number;
+  incomeByCategory: CategorySlice[];
+  expenseByCategory: CategorySlice[];
+  transactions: Transaction[];
 }
 
 export type ExportFormat = 'excel' | 'pdf' | 'csv';
