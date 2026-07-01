@@ -44,20 +44,7 @@ export default function Dashboard() {
   const theme = useTheme();
   const { data, isLoading, isError, error } = useDashboard();
 
-  // Merge monthly income + expense into one series keyed by month.
-  const monthlySeries = useMemo(() => {
-    if (!data) return [];
-    const map = new Map<string, { month: string; income: number; expense: number }>();
-    data.monthlyIncome.forEach((p) =>
-      map.set(p.month, { month: p.month, income: p.amount, expense: 0 }),
-    );
-    data.monthlyExpense.forEach((p) => {
-      const existing = map.get(p.month);
-      if (existing) existing.expense = p.amount;
-      else map.set(p.month, { month: p.month, income: 0, expense: p.amount });
-    });
-    return Array.from(map.values());
-  }, [data]);
+  const monthlySeries = useMemo(() => data?.monthlySeries ?? [], [data]);
 
   const recentColumns: GridColDef<Transaction>[] = [
     {
@@ -106,7 +93,7 @@ export default function Dashboard() {
         <Grid item xs={12} sm={6} lg={3}>
           <StatCard
             title="Total Expenses"
-            value={formatCurrency(data.totalExpenses)}
+            value={formatCurrency(data.totalExpense)}
             icon={<TrendingDownIcon />}
             color="warning"
           />
@@ -114,7 +101,7 @@ export default function Dashboard() {
         <Grid item xs={12} sm={6} lg={3}>
           <StatCard
             title="Balance"
-            value={formatCurrency(data.balance)}
+            value={formatCurrency(data.netBalance)}
             icon={<AccountBalanceIcon />}
             color="primary"
           />
@@ -122,9 +109,9 @@ export default function Dashboard() {
         <Grid item xs={12} sm={6} lg={3}>
           <StatCard
             title="Net Profit"
-            value={formatCurrency(data.netProfit)}
+            value={formatCurrency(data.netBalance)}
             icon={<SavingsIcon />}
-            color={data.netProfit >= 0 ? 'info' : 'error'}
+            color={data.netBalance >= 0 ? 'info' : 'error'}
           />
         </Grid>
 
@@ -137,7 +124,7 @@ export default function Dashboard() {
                 <ResponsiveContainer>
                   <ComposedChart data={monthlySeries}>
                     <CartesianGrid strokeDasharray="3 3" stroke={theme.palette.divider} />
-                    <XAxis dataKey="month" stroke={theme.palette.text.secondary} />
+                    <XAxis dataKey="label" stroke={theme.palette.text.secondary} />
                     <YAxis stroke={theme.palette.text.secondary} />
                     <RTooltip
                       contentStyle={{
@@ -217,13 +204,13 @@ export default function Dashboard() {
             <CardContent>
               <Box sx={{ width: '100%', height: 260 }}>
                 <ResponsiveContainer>
-                  <BarChart data={data.monthlyExpense}>
+                  <BarChart data={monthlySeries}>
                     <CartesianGrid strokeDasharray="3 3" stroke={theme.palette.divider} />
-                    <XAxis dataKey="month" stroke={theme.palette.text.secondary} />
+                    <XAxis dataKey="label" stroke={theme.palette.text.secondary} />
                     <YAxis stroke={theme.palette.text.secondary} />
                     <RTooltip formatter={(v: number) => formatCurrency(v)} />
                     <Bar
-                      dataKey="amount"
+                      dataKey="expense"
                       name="Expense"
                       fill={theme.palette.warning.main}
                       radius={[4, 4, 0, 0]}
@@ -241,7 +228,7 @@ export default function Dashboard() {
             <CardHeader title="Recent Transactions" />
             <CardContent>
               <DataTable
-                rows={data.recentTransactions}
+                rows={data.recent}
                 columns={recentColumns}
                 height={360}
                 hideFooter

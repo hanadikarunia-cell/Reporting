@@ -94,25 +94,30 @@ export interface PagedResult<T> {
   pageSize: number;
 }
 
-export interface MonthlyPoint {
-  month: string; // e.g. "2026-01" or "Jan"
-  amount: number;
+export interface MonthlySeriesPoint {
+  year: number;
+  month: number;
+  label: string;
+  income: number;
+  expense: number;
+  net: number;
 }
 
 export interface CategorySlice {
   category: string;
   amount: number;
+  count: number;
 }
 
 export interface DashboardSummary {
   totalIncome: number;
-  totalExpenses: number;
-  balance: number;
-  netProfit: number;
-  monthlyIncome: MonthlyPoint[];
-  monthlyExpense: MonthlyPoint[];
+  totalExpense: number;
+  netBalance: number;
+  transactionCount: number;
+  pendingApprovals: number;
+  monthlySeries: MonthlySeriesPoint[];
   topCategories: CategorySlice[];
-  recentTransactions: Transaction[];
+  recent: Transaction[];
 }
 
 export interface ReportFilters {
