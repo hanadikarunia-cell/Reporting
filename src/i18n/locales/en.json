@@ -25,6 +25,8 @@
       "Marketing": "Marketing",
       "Travel": "Travel",
       "Taxes": "Taxes",
+      "Petty Cash": "Petty Cash",
+      "Entertainment": "Entertainment",
       "Other": "Other"
     }
   },

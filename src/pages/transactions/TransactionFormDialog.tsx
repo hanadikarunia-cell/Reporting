@@ -33,6 +33,8 @@ const CATEGORIES = [
   'Marketing',
   'Travel',
   'Taxes',
+  'Petty Cash',
+  'Entertainment',
   'Other',
 ];
 
@@ -194,7 +196,7 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
                 fullWidth
                 inputProps={{ step: '0.01', min: '0' }}
                 InputProps={{
-                  startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                  startAdornment: <InputAdornment position="start">Rp</InputAdornment>,
                 }}
                 {...register('amount')}
                 error={!!errors.amount}
