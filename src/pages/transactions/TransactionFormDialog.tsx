@@ -33,7 +33,6 @@ const CATEGORIES = [
   'Marketing',
   'Travel',
   'Taxes',
-  'Petty Cash',
   'Entertainment',
   'Other',
 ];

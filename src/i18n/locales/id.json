@@ -203,5 +203,21 @@
     "title": "Halaman tidak ditemukan",
     "message": "Halaman yang Anda cari tidak ada atau telah dipindahkan.",
     "backToDashboard": "Kembali ke Dasbor"
+  },
+  "pettyCash": {
+    "title": "Permintaan Kas Kecil",
+    "newRequest": "Permintaan Baru",
+    "reason": "Alasan",
+    "requestedBy": "Diminta Oleh",
+    "requestedDate": "Tanggal Permintaan",
+    "failedToLoad": "Gagal memuat permintaan kas kecil",
+    "approve": "Setujui",
+    "reject": "Tolak",
+    "rejectTitle": "Tolak permintaan kas kecil",
+    "rejectMessage": "Tolak permintaan kas kecil ini? Pemohon akan diberi tahu.",
+    "reasonRequired": "Alasan wajib diisi",
+    "amountPositive": "Jumlah harus lebih besar dari nol",
+    "branchRequired": "Cabang wajib diisi",
+    "totalIssued": "Kas Kecil Dikeluarkan"
   }
 }

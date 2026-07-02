@@ -7,6 +7,7 @@ import Layout from '@/components/Layout';
 import Login from '@/pages/Login';
 import Dashboard from '@/pages/Dashboard';
 import Transactions from '@/pages/Transactions';
+import PettyCashRequests from '@/pages/PettyCashRequests';
 import Reports from '@/pages/Reports';
 import Users from '@/pages/Users';
 import Branches from '@/pages/Branches';
@@ -33,6 +34,14 @@ export default function AppRoutes() {
           element={
             <Layout>
               <Transactions />
+            </Layout>
+          }
+        />
+        <Route
+          path="/petty-cash-requests"
+          element={
+            <Layout>
+              <PettyCashRequests />
             </Layout>
           }
         />

@@ -111,6 +111,7 @@ export interface DashboardSummary {
   totalIncome: number;
   totalExpense: number;
   netBalance: number;
+  totalPettyCashIssued: number;
   transactionCount: number;
   pendingApprovals: number;
   monthlySeries: MonthlySeriesPoint[];
@@ -135,6 +136,7 @@ export interface ReportResult {
   totalIncome: number;
   totalExpense: number;
   netBalance: number;
+  totalPettyCashIssued: number;
   transactionCount: number;
   incomeByCategory: CategorySlice[];
   expenseByCategory: CategorySlice[];
@@ -157,6 +159,33 @@ export interface BranchInput {
   code: string;
   address?: string;
   isActive?: boolean;
+}
+
+export interface PettyCashRequest {
+  id: string;
+  amount: number;
+  reason: string;
+  branch: string;
+  requestedBy: string;
+  requestedByName: string;
+  requestedDate: string;
+  status: ApprovalStatus;
+  approvedBy?: string;
+  approvedDate?: string;
+  linkedTransactionId?: string;
+}
+
+export interface PettyCashRequestInput {
+  amount: number;
+  reason: string;
+  branch: string;
+}
+
+export interface PettyCashRequestFilters {
+  branch?: string;
+  status?: ApprovalStatus;
+  page?: number;
+  pageSize?: number;
 }
 
 export interface AuditLog {

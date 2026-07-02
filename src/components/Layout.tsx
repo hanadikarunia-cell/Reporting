@@ -28,6 +28,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import StoreIcon from '@mui/icons-material/Store';
 import HistoryIcon from '@mui/icons-material/History';
 import SettingsIcon from '@mui/icons-material/Settings';
+import PaidIcon from '@mui/icons-material/Paid';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -50,6 +51,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { labelKey: 'nav.dashboard', to: '/', icon: <DashboardIcon /> },
   { labelKey: 'nav.transactions', to: '/transactions', icon: <ReceiptLongIcon /> },
+  { labelKey: 'pettyCash.title', to: '/petty-cash-requests', icon: <PaidIcon /> },
   { labelKey: 'nav.reports', to: '/reports', icon: <AssessmentIcon /> },
   { labelKey: 'nav.users', to: '/users', icon: <PeopleIcon />, roles: ['Manager'] },
   { labelKey: 'nav.branches', to: '/branches', icon: <StoreIcon />, roles: ['Manager'] },

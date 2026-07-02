@@ -203,5 +203,21 @@
     "title": "Page not found",
     "message": "The page you are looking for doesn't exist or has been moved.",
     "backToDashboard": "Back to Dashboard"
+  },
+  "pettyCash": {
+    "title": "Petty Cash Requests",
+    "newRequest": "New Request",
+    "reason": "Reason",
+    "requestedBy": "Requested By",
+    "requestedDate": "Requested Date",
+    "failedToLoad": "Failed to load petty cash requests",
+    "approve": "Approve",
+    "reject": "Reject",
+    "rejectTitle": "Reject petty cash request",
+    "rejectMessage": "Reject this petty cash request? The requester will be notified.",
+    "reasonRequired": "Reason is required",
+    "amountPositive": "Amount must be greater than zero",
+    "branchRequired": "Branch is required",
+    "totalIssued": "Petty Cash Issued"
   }
 }

@@ -12,7 +12,7 @@ import { useTheme } from '@mui/material/styles';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import SavingsIcon from '@mui/icons-material/Savings';
+import PaidIcon from '@mui/icons-material/Paid';
 
 import {
   Bar,
@@ -112,10 +112,10 @@ export default function Dashboard() {
         </Grid>
         <Grid item xs={12} sm={6} lg={3}>
           <StatCard
-            title={t('dashboard.netProfit')}
-            value={formatCurrency(data.netBalance)}
-            icon={<SavingsIcon />}
-            color={data.netBalance >= 0 ? 'info' : 'error'}
+            title={t('pettyCash.totalIssued')}
+            value={formatCurrency(data.totalPettyCashIssued)}
+            icon={<PaidIcon />}
+            color="info"
           />
         </Grid>
 
