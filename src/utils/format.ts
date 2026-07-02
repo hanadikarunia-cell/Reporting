@@ -23,11 +23,12 @@ export function formatDateTime(iso?: string): string {
 export function getErrorMessage(err: unknown, fallback = 'Something went wrong'): string {
   if (typeof err === 'object' && err !== null) {
     const anyErr = err as {
-      response?: { data?: { message?: string; title?: string } };
+      response?: { data?: { message?: string; detail?: string; title?: string } };
       message?: string;
     };
     return (
       anyErr.response?.data?.message ??
+      anyErr.response?.data?.detail ??
       anyErr.response?.data?.title ??
       anyErr.message ??
       fallback

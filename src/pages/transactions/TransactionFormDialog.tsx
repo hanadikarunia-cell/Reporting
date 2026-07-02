@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
@@ -18,22 +18,25 @@ import Typography from '@mui/material/Typography';
 
 import FileUpload from '@/components/FileUpload';
 import { useBranches } from '@/hooks/useBranches';
-import { useCreateTransaction, useUpdateTransaction } from '@/hooks/useTransactions';
-import type { Attachment, Transaction, TransactionInput } from '@/types';
-import { getErrorMessage } from '@/utils/format';
+import { useCreateTransaction, useUpdateTransaction, useUsersLookup } from '@/hooks/useTransactions';
+import { useAuth } from '@/context/AuthContext';
+import { usePettyCashBalance } from '@/hooks/usePettyCashBalance';
+import type { Attachment, Transaction, TransactionInput, TransactionType } from '@/types';
+import { formatCurrency, getErrorMessage } from '@/utils/format';
 
-const CATEGORIES = [
-  'Sales',
-  'Services',
-  'Interest',
+const INCOME_CATEGORIES = ['Rent', 'Interest', 'Invoice', 'Salaries', 'Other'];
+
+const EXPENSE_CATEGORIES = [
+  'Service',
   'Salaries',
-  'Rent',
-  'Utilities',
-  'Supplies',
-  'Marketing',
-  'Travel',
-  'Taxes',
   'Entertainment',
+  'Office Utilities',
+  'Taxes - PPN',
+  'Taxes - PPH21',
+  'Taxes - PPH25',
+  'Taxes - PPH23',
+  'Taxes - Other',
+  'Car Debt',
   'Other',
 ];
 
@@ -49,8 +52,11 @@ function todayIso() {
 
 export default function TransactionFormDialog({ open, transaction, onClose }: Props) {
   const { t } = useTranslation();
+  const { isManager } = useAuth();
   const isEdit = !!transaction;
   const { data: branches = [] } = useBranches();
+  const { data: usersLookup = [] } = useUsersLookup();
+  const { data: pettyCashBalance } = usePettyCashBalance();
   const createMut = useCreateTransaction();
   const updateMut = useUpdateTransaction();
 
@@ -58,14 +64,20 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
 
   const schema = useMemo(
     () =>
-      z.object({
-        type: z.enum(['Income', 'Expense']),
-        category: z.string().min(1, t('transactionForm.categoryRequired')).max(80),
-        amount: z.coerce.number().positive(t('transactionForm.amountPositive')),
-        date: z.string().min(1, t('transactionForm.dateRequired')),
-        branch: z.string().min(1, t('transactionForm.branchRequired')),
-        description: z.string().max(500).optional(),
-      }),
+      z
+        .object({
+          type: z.enum(['Income', 'Expense']),
+          category: z.string().min(1, t('transactionForm.categoryRequired')).max(80),
+          amount: z.coerce.number().positive(t('transactionForm.amountPositive')),
+          date: z.string().min(1, t('transactionForm.dateRequired')),
+          branch: z.string().min(1, t('transactionForm.branchRequired')),
+          description: z.string().max(500).optional(),
+          relatedUserId: z.string().optional(),
+        })
+        .refine(
+          (v) => !(v.type === 'Expense' && v.category === 'Salaries') || !!v.relatedUserId,
+          { message: t('transactionForm.relatedUserRequired'), path: ['relatedUserId'] },
+        ),
     [t],
   );
   type FormValues = z.infer<typeof schema>;
@@ -75,6 +87,7 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -85,8 +98,15 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
       date: todayIso(),
       branch: '',
       description: '',
+      relatedUserId: '',
     },
   });
+
+  const watchedType: TransactionType = useWatch({ control, name: 'type' });
+  const watchedCategory = useWatch({ control, name: 'category' });
+  const categories = watchedType === 'Income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+  const showRelatedUser = watchedType === 'Expense' && watchedCategory === 'Salaries';
+  const showBalanceHint = !isManager && watchedType === 'Expense' && watchedCategory !== 'Petty Cash';
 
   useEffect(() => {
     if (!open) return;
@@ -99,6 +119,7 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
             date: transaction.date.slice(0, 10),
             branch: transaction.branch,
             description: transaction.description ?? '',
+            relatedUserId: transaction.relatedUserId ?? '',
           }
         : {
             type: 'Expense',
@@ -107,6 +128,7 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
             date: todayIso(),
             branch: branches[0]?.id ?? '',
             description: '',
+            relatedUserId: '',
           },
     );
     // The API only returns attachment IDs on a transaction, not full file
@@ -114,6 +136,14 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
     setAttachments([]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, transaction, branches.length]);
+
+  // Reset category when switching Type if it's no longer a valid option.
+  useEffect(() => {
+    if (watchedCategory && !categories.includes(watchedCategory)) {
+      setValue('category', '');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watchedType]);
 
   const serverError =
     (createMut.isError && getErrorMessage(createMut.error)) ||
@@ -124,6 +154,7 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
     const payload: TransactionInput = {
       ...values,
       description: values.description || undefined,
+      relatedUserId: values.relatedUserId || undefined,
       attachmentIds: attachments.map((a) => a.id),
     };
     if (isEdit && transaction) {
@@ -144,6 +175,11 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
           {serverError && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {serverError}
+            </Alert>
+          )}
+          {showBalanceHint && pettyCashBalance !== undefined && (
+            <Alert severity="info" sx={{ mb: 2 }}>
+              {t('pettyCash.currentBalance', { amount: formatCurrency(pettyCashBalance) })}
             </Alert>
           )}
           <Grid container spacing={2}>
@@ -179,7 +215,7 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
                     error={!!errors.category}
                     helperText={errors.category?.message}
                   >
-                    {CATEGORIES.map((c) => (
+                    {categories.map((c) => (
                       <MenuItem key={c} value={c}>
                         {t(`enums.category.${c}`)}
                       </MenuItem>
@@ -193,7 +229,7 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
                 label={t('common.amount')}
                 type="number"
                 fullWidth
-                inputProps={{ step: '0.01', min: '0' }}
+                inputProps={{ step: '1', min: '0' }}
                 InputProps={{
                   startAdornment: <InputAdornment position="start">Rp</InputAdornment>,
                 }}
@@ -240,6 +276,30 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
                 )}
               />
             </Grid>
+            {showRelatedUser && (
+              <Grid item xs={12}>
+                <Controller
+                  control={control}
+                  name="relatedUserId"
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      select
+                      label={t('transactionForm.relatedUser')}
+                      fullWidth
+                      error={!!errors.relatedUserId}
+                      helperText={errors.relatedUserId?.message}
+                    >
+                      {usersLookup.map((u) => (
+                        <MenuItem key={u.id} value={u.id}>
+                          {u.displayName}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  )}
+                />
+              </Grid>
+            )}
             <Grid item xs={12}>
               <TextField
                 label={t('transactionForm.description')}

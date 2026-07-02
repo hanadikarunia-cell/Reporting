@@ -27,7 +27,16 @@
       "Taxes": "Taxes",
       "Petty Cash": "Petty Cash",
       "Entertainment": "Entertainment",
-      "Other": "Other"
+      "Other": "Other",
+      "Invoice": "Invoice",
+      "Service": "Service",
+      "Office Utilities": "Office Utilities",
+      "Taxes - PPN": "Taxes - PPN",
+      "Taxes - PPH21": "Taxes - PPH21",
+      "Taxes - PPH25": "Taxes - PPH25",
+      "Taxes - PPH23": "Taxes - PPH23",
+      "Taxes - Other": "Taxes - Other",
+      "Car Debt": "Car Debt"
     }
   },
   "common": {
@@ -126,7 +135,9 @@
     "saveChanges": "Save Changes",
     "categoryRequired": "Category is required",
     "attachFile": "Attach file",
-    "uploadFailed": "Upload failed"
+    "uploadFailed": "Upload failed",
+    "relatedUser": "Employee",
+    "relatedUserRequired": "Select which employee this salary payment is for"
   },
   "reports": {
     "title": "Reports",
@@ -218,6 +229,8 @@
     "reasonRequired": "Reason is required",
     "amountPositive": "Amount must be greater than zero",
     "branchRequired": "Branch is required",
-    "totalIssued": "Petty Cash Issued"
+    "totalIssued": "Petty Cash Issued",
+    "currentBalance": "Your petty cash balance: {{amount}}",
+    "balanceLabel": "Petty Cash Balance"
   }
 }

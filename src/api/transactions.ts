@@ -4,9 +4,20 @@ import type {
   Transaction,
   TransactionFilters,
   TransactionInput,
+  UserLookup,
 } from '@/types';
 
 export const transactionsApi = {
+  async pettyCashBalance(): Promise<number> {
+    const { data } = await axiosClient.get<{ balance: number }>('/transactions/petty-cash-balance');
+    return data.balance;
+  },
+
+  async usersLookup(): Promise<UserLookup[]> {
+    const { data } = await axiosClient.get<UserLookup[]>('/transactions/users-lookup');
+    return data;
+  },
+
   async list(filters: TransactionFilters = {}): Promise<PagedResult<Transaction>> {
     const { data } = await axiosClient.get<PagedResult<Transaction>>('/transactions', {
       params: filters,

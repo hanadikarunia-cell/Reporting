@@ -13,6 +13,11 @@ export interface User {
   isActive?: boolean;
 }
 
+export interface UserLookup {
+  id: string;
+  displayName: string;
+}
+
 export interface AuthResponse {
   accessToken: string;
   refreshToken: string;
@@ -61,6 +66,7 @@ export interface Transaction {
   approvedBy?: string;
   approvedDate?: string;
   attachmentIds: string[];
+  relatedUserId?: string;
 }
 
 export interface TransactionInput {
@@ -71,6 +77,7 @@ export interface TransactionInput {
   date: string;
   branch: string; // branchId
   attachmentIds?: string[];
+  relatedUserId?: string;
 }
 
 export interface TransactionFilters {

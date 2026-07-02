@@ -17,6 +17,13 @@ export function useTransactions(filters: TransactionFilters) {
   });
 }
 
+export function useUsersLookup() {
+  return useQuery({
+    queryKey: ['usersLookup'],
+    queryFn: () => transactionsApi.usersLookup(),
+  });
+}
+
 export function useCreateTransaction() {
   const qc = useQueryClient();
   return useMutation({

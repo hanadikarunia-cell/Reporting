@@ -18,6 +18,10 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+import PaidIcon from '@mui/icons-material/Paid';
+
+import StatCard from '@/components/StatCard';
+import { usePettyCashBalance } from '@/hooks/usePettyCashBalance';
 
 import type {
   GridColDef,
@@ -52,6 +56,7 @@ export default function Transactions() {
   const { t } = useTranslation();
   const { isManager } = useAuth();
   const { data: branches = [] } = useBranches();
+  const { data: pettyCashBalance } = usePettyCashBalance();
 
   const [filters, setFilters] = useState<TransactionFilters>({
     page: 1,
@@ -211,6 +216,19 @@ export default function Transactions() {
           {t('transactions.newTransaction')}
         </Button>
       </Stack>
+
+      {!isManager && pettyCashBalance !== undefined && (
+        <Grid container spacing={3} sx={{ mb: 3 }}>
+          <Grid item xs={12} sm={6} md={4}>
+            <StatCard
+              title={t('pettyCash.balanceLabel')}
+              value={formatCurrency(pettyCashBalance)}
+              icon={<PaidIcon />}
+              color={pettyCashBalance > 0 ? 'info' : 'warning'}
+            />
+          </Grid>
+        </Grid>
+      )}
 
       {/* Filters */}
       <Card sx={{ mb: 3 }}>

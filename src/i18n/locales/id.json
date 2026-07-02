@@ -27,7 +27,16 @@
       "Taxes": "Pajak",
       "Petty Cash": "Kas Kecil",
       "Entertainment": "Hiburan",
-      "Other": "Lainnya"
+      "Other": "Lainnya",
+      "Invoice": "Faktur",
+      "Service": "Servis",
+      "Office Utilities": "Utilitas Kantor",
+      "Taxes - PPN": "Pajak - PPN",
+      "Taxes - PPH21": "Pajak - PPH21",
+      "Taxes - PPH25": "Pajak - PPH25",
+      "Taxes - PPH23": "Pajak - PPH23",
+      "Taxes - Other": "Pajak - Lainnya",
+      "Car Debt": "Utang Mobil"
     }
   },
   "common": {
@@ -126,7 +135,9 @@
     "saveChanges": "Simpan Perubahan",
     "categoryRequired": "Kategori wajib diisi",
     "attachFile": "Lampirkan berkas",
-    "uploadFailed": "Unggah gagal"
+    "uploadFailed": "Unggah gagal",
+    "relatedUser": "Karyawan",
+    "relatedUserRequired": "Pilih karyawan untuk pembayaran gaji ini"
   },
   "reports": {
     "title": "Laporan",
