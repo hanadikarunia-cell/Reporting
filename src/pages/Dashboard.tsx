@@ -103,24 +103,28 @@ export default function Dashboard() {
             />
           </Grid>
         )}
-        <Grid item xs={12} sm={6} lg={3}>
-          <StatCard
-            title={t('dashboard.totalExpenses')}
-            value={formatCurrency(data.totalExpense)}
-            icon={<TrendingDownIcon />}
-            color="warning"
-            onClick={() => setSelectedMetric('expense')}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} lg={3}>
-          <StatCard
-            title={t('dashboard.balance')}
-            value={formatCurrency(data.netBalance)}
-            icon={<AccountBalanceIcon />}
-            color="primary"
-            onClick={() => setSelectedMetric('balance')}
-          />
-        </Grid>
+        {isManager && (
+          <Grid item xs={12} sm={6} lg={3}>
+            <StatCard
+              title={t('dashboard.totalExpenses')}
+              value={formatCurrency(data.totalExpense)}
+              icon={<TrendingDownIcon />}
+              color="warning"
+              onClick={() => setSelectedMetric('expense')}
+            />
+          </Grid>
+        )}
+        {isManager && (
+          <Grid item xs={12} sm={6} lg={3}>
+            <StatCard
+              title={t('dashboard.balance')}
+              value={formatCurrency(data.netBalance)}
+              icon={<AccountBalanceIcon />}
+              color="primary"
+              onClick={() => setSelectedMetric('balance')}
+            />
+          </Grid>
+        )}
         <Grid item xs={12} sm={6} lg={3}>
           <StatCard
             title={t('pettyCash.totalIssued')}
