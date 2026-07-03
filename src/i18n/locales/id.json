@@ -70,6 +70,7 @@
     "dashboard": "Dasbor",
     "transactions": "Transaksi",
     "reports": "Laporan",
+    "cars": "Mobil",
     "users": "Pengguna",
     "branches": "Cabang",
     "auditLogs": "Log Audit",
@@ -147,7 +148,9 @@
     "attachFile": "Lampirkan berkas",
     "uploadFailed": "Unggah gagal",
     "relatedUser": "Karyawan",
-    "relatedUserRequired": "Pilih karyawan untuk pembayaran gaji ini"
+    "relatedUserRequired": "Pilih karyawan untuk pembayaran gaji ini",
+    "relatedCar": "Mobil",
+    "relatedCarRequired": "Pilih mobil untuk transaksi ini"
   },
   "reports": {
     "title": "Laporan",
@@ -188,6 +191,33 @@
     "failedToLoad": "Gagal memuat cabang",
     "nameRequired": "Nama wajib diisi",
     "codeRequired": "Kode wajib diisi"
+  },
+  "cars": {
+    "title": "Mobil",
+    "newCar": "Mobil Baru",
+    "editCar": "Ubah Mobil",
+    "client": "Klien",
+    "type": "Jenis",
+    "model": "Model",
+    "plateNumber": "Nomor Plat",
+    "monthlyBill": "Tagihan Bulanan",
+    "initialDebt": "Utang Awal",
+    "remainingDebt": "Sisa Utang",
+    "contractStartDate": "Tanggal Mulai Kontrak",
+    "contractDurationMonths": "Durasi Kontrak (bulan)",
+    "contractEndDate": "Tanggal Berakhir Kontrak",
+    "notes": "Catatan",
+    "active": "Aktif",
+    "inactive": "Tidak Aktif",
+    "failedToLoad": "Gagal memuat mobil",
+    "branchRequired": "Cabang wajib diisi",
+    "clientRequired": "Klien wajib diisi",
+    "typeRequired": "Jenis wajib diisi",
+    "modelRequired": "Model wajib diisi",
+    "plateRequired": "Nomor plat wajib diisi",
+    "amountNonNegative": "Jumlah tidak boleh negatif",
+    "contractStartRequired": "Tanggal mulai kontrak wajib diisi",
+    "durationPositive": "Durasi minimal 1 bulan"
   },
   "auditLogs": {
     "title": "Log Audit",

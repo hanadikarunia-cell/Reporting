@@ -33,6 +33,7 @@ import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 
 import { useAuth } from '@/context/AuthContext';
 import { useColorMode } from '@/context/ThemeContext';
@@ -53,6 +54,7 @@ const NAV_ITEMS: NavItem[] = [
   { labelKey: 'nav.transactions', to: '/transactions', icon: <ReceiptLongIcon /> },
   { labelKey: 'pettyCash.title', to: '/petty-cash-requests', icon: <PaidIcon /> },
   { labelKey: 'nav.reports', to: '/reports', icon: <AssessmentIcon /> },
+  { labelKey: 'nav.cars', to: '/cars', icon: <DirectionsCarIcon /> },
   { labelKey: 'nav.users', to: '/users', icon: <PeopleIcon />, roles: ['Manager'] },
   { labelKey: 'nav.branches', to: '/branches', icon: <StoreIcon />, roles: ['Manager'] },
   { labelKey: 'nav.auditLogs', to: '/audit-logs', icon: <HistoryIcon />, roles: ['Manager'] },

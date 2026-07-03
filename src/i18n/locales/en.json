@@ -70,6 +70,7 @@
     "dashboard": "Dashboard",
     "transactions": "Transactions",
     "reports": "Reports",
+    "cars": "Cars",
     "users": "Users",
     "branches": "Branches",
     "auditLogs": "Audit Logs",
@@ -147,7 +148,9 @@
     "attachFile": "Attach file",
     "uploadFailed": "Upload failed",
     "relatedUser": "Employee",
-    "relatedUserRequired": "Select which employee this salary payment is for"
+    "relatedUserRequired": "Select which employee this salary payment is for",
+    "relatedCar": "Car",
+    "relatedCarRequired": "Select which car this is for"
   },
   "reports": {
     "title": "Reports",
@@ -188,6 +191,33 @@
     "failedToLoad": "Failed to load branches",
     "nameRequired": "Name is required",
     "codeRequired": "Code is required"
+  },
+  "cars": {
+    "title": "Cars",
+    "newCar": "New Car",
+    "editCar": "Edit Car",
+    "client": "Client",
+    "type": "Type",
+    "model": "Model",
+    "plateNumber": "Plate Number",
+    "monthlyBill": "Monthly Bill",
+    "initialDebt": "Initial Debt",
+    "remainingDebt": "Remaining Debt",
+    "contractStartDate": "Contract Start Date",
+    "contractDurationMonths": "Contract Duration (months)",
+    "contractEndDate": "Contract End Date",
+    "notes": "Notes",
+    "active": "Active",
+    "inactive": "Inactive",
+    "failedToLoad": "Failed to load cars",
+    "branchRequired": "Branch is required",
+    "clientRequired": "Client is required",
+    "typeRequired": "Type is required",
+    "modelRequired": "Model is required",
+    "plateRequired": "Plate number is required",
+    "amountNonNegative": "Amount cannot be negative",
+    "contractStartRequired": "Contract start date is required",
+    "durationPositive": "Duration must be at least 1 month"
   },
   "auditLogs": {
     "title": "Audit Logs",

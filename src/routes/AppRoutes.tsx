@@ -8,6 +8,7 @@ import Login from '@/pages/Login';
 import Dashboard from '@/pages/Dashboard';
 import Transactions from '@/pages/Transactions';
 import PettyCashRequests from '@/pages/PettyCashRequests';
+import Cars from '@/pages/Cars';
 import Reports from '@/pages/Reports';
 import Users from '@/pages/Users';
 import Branches from '@/pages/Branches';
@@ -50,6 +51,14 @@ export default function AppRoutes() {
           element={
             <Layout>
               <Reports />
+            </Layout>
+          }
+        />
+        <Route
+          path="/cars"
+          element={
+            <Layout>
+              <Cars />
             </Layout>
           }
         />

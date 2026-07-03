@@ -19,6 +19,7 @@ import Typography from '@mui/material/Typography';
 import FileUpload from '@/components/FileUpload';
 import { useBranches } from '@/hooks/useBranches';
 import { useCreateTransaction, useUpdateTransaction, useUsersLookup } from '@/hooks/useTransactions';
+import { useCarsLookup } from '@/hooks/useCars';
 import { useAuth } from '@/context/AuthContext';
 import { usePettyCashBalance } from '@/hooks/usePettyCashBalance';
 import type { Attachment, Transaction, TransactionInput, TransactionType } from '@/types';
@@ -56,6 +57,7 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
   const isEdit = !!transaction;
   const { data: branches = [] } = useBranches();
   const { data: usersLookup = [] } = useUsersLookup();
+  const { data: carsLookup = [] } = useCarsLookup();
   const { data: pettyCashBalance } = usePettyCashBalance();
   const createMut = useCreateTransaction();
   const updateMut = useUpdateTransaction();
@@ -73,10 +75,16 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
           branch: z.string().min(1, t('transactionForm.branchRequired')),
           description: z.string().max(500).optional(),
           relatedUserId: z.string().optional(),
+          carId: z.string().optional(),
         })
         .refine(
           (v) => !(v.type === 'Expense' && v.category === 'Salaries') || !!v.relatedUserId,
           { message: t('transactionForm.relatedUserRequired'), path: ['relatedUserId'] },
+        )
+        .refine(
+          (v) =>
+            !(v.type === 'Expense' && ['Service', 'Car Debt'].includes(v.category)) || !!v.carId,
+          { message: t('transactionForm.relatedCarRequired'), path: ['carId'] },
         ),
     [t],
   );
@@ -99,6 +107,7 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
       branch: '',
       description: '',
       relatedUserId: '',
+      carId: '',
     },
   });
 
@@ -106,6 +115,8 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
   const watchedCategory = useWatch({ control, name: 'category' });
   const categories = watchedType === 'Income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
   const showRelatedUser = watchedType === 'Expense' && watchedCategory === 'Salaries';
+  const showRelatedCar =
+    watchedType === 'Expense' && ['Service', 'Car Debt'].includes(watchedCategory);
   const showBalanceHint = !isManager && watchedType === 'Expense' && watchedCategory !== 'Petty Cash';
 
   useEffect(() => {
@@ -120,6 +131,7 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
             branch: transaction.branch,
             description: transaction.description ?? '',
             relatedUserId: transaction.relatedUserId ?? '',
+            carId: transaction.carId ?? '',
           }
         : {
             type: 'Expense',
@@ -129,6 +141,7 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
             branch: branches[0]?.id ?? '',
             description: '',
             relatedUserId: '',
+            carId: '',
           },
     );
     // The API only returns attachment IDs on a transaction, not full file
@@ -155,6 +168,7 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
       ...values,
       description: values.description || undefined,
       relatedUserId: values.relatedUserId || undefined,
+      carId: values.carId || undefined,
       attachmentIds: attachments.map((a) => a.id),
     };
     if (isEdit && transaction) {
@@ -293,6 +307,30 @@ export default function TransactionFormDialog({ open, transaction, onClose }: Pr
                       {usersLookup.map((u) => (
                         <MenuItem key={u.id} value={u.id}>
                           {u.displayName}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  )}
+                />
+              </Grid>
+            )}
+            {showRelatedCar && (
+              <Grid item xs={12}>
+                <Controller
+                  control={control}
+                  name="carId"
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      select
+                      label={t('transactionForm.relatedCar')}
+                      fullWidth
+                      error={!!errors.carId}
+                      helperText={errors.carId?.message}
+                    >
+                      {carsLookup.map((c) => (
+                        <MenuItem key={c.id} value={c.id}>
+                          {c.label}
                         </MenuItem>
                       ))}
                     </TextField>

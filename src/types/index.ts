@@ -43,6 +43,30 @@ export interface Branch {
   isActive?: boolean;
 }
 
+export interface Car {
+  id: string;
+  branch: string; // branchId
+  client: string;
+  type: string;
+  model: string;
+  plateNumber: string;
+  monthlyBill: number;
+  initialDebt: number;
+  remainingDebt: number;
+  contractStartDate: string;
+  contractDurationMonths: number;
+  contractEndDate: string;
+  notes?: string;
+  isActive: boolean;
+  createdBy: string;
+  createdDate: string;
+}
+
+export interface CarLookup {
+  id: string;
+  label: string;
+}
+
 export interface Attachment {
   id: string;
   fileName: string;
@@ -67,6 +91,7 @@ export interface Transaction {
   approvedDate?: string;
   attachmentIds: string[];
   relatedUserId?: string;
+  carId?: string;
 }
 
 export interface TransactionInput {
@@ -78,6 +103,7 @@ export interface TransactionInput {
   branch: string; // branchId
   attachmentIds?: string[];
   relatedUserId?: string;
+  carId?: string;
 }
 
 export interface TransactionFilters {
@@ -188,6 +214,20 @@ export interface BranchInput {
   name: string;
   code: string;
   address?: string;
+  isActive?: boolean;
+}
+
+export interface CarInput {
+  branch: string;
+  client: string;
+  type: string;
+  model: string;
+  plateNumber: string;
+  monthlyBill: number;
+  initialDebt: number;
+  contractStartDate: string;
+  contractDurationMonths: number;
+  notes?: string;
   isActive?: boolean;
 }
 
