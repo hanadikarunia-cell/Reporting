@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { transactionsApi } from '@/api/transactions';
 import { useAuth } from '@/context/AuthContext';
 
@@ -11,9 +11,4 @@ export function usePettyCashBalance() {
     queryFn: () => transactionsApi.pettyCashBalance(),
     enabled: !isManager,
   });
-}
-
-export function useInvalidatePettyCashBalance() {
-  const qc = useQueryClient();
-  return () => qc.invalidateQueries({ queryKey: [KEY] });
 }

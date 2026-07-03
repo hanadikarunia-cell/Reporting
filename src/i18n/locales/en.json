@@ -230,6 +230,8 @@
     "amountPositive": "Amount must be greater than zero",
     "branchRequired": "Branch is required",
     "totalIssued": "Petty Cash Issued",
+    "totalExpenses": "Approved Petty Cash Expenses",
+    "outstanding": "Petty Cash Outstanding",
     "currentBalance": "Your petty cash balance: {{amount}}",
     "balanceLabel": "Petty Cash Balance"
   }

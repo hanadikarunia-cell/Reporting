@@ -13,6 +13,8 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import PaidIcon from '@mui/icons-material/Paid';
+import SavingsIcon from '@mui/icons-material/Savings';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 
 import {
   Bar,
@@ -115,6 +117,22 @@ export default function Dashboard() {
             title={t('pettyCash.totalIssued')}
             value={formatCurrency(data.totalPettyCashIssued)}
             icon={<PaidIcon />}
+            color="info"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} lg={3}>
+          <StatCard
+            title={t('pettyCash.totalExpenses')}
+            value={formatCurrency(data.totalPettyCashExpenses)}
+            icon={<ReceiptLongIcon />}
+            color="warning"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} lg={3}>
+          <StatCard
+            title={t('pettyCash.outstanding')}
+            value={formatCurrency(data.totalPettyCashOutstanding)}
+            icon={<SavingsIcon />}
             color="info"
           />
         </Grid>

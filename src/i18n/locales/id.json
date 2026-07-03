@@ -229,6 +229,8 @@
     "reasonRequired": "Alasan wajib diisi",
     "amountPositive": "Jumlah harus lebih besar dari nol",
     "branchRequired": "Cabang wajib diisi",
-    "totalIssued": "Kas Kecil Dikeluarkan"
+    "totalIssued": "Kas Kecil Dikeluarkan",
+    "totalExpenses": "Pengeluaran Kas Kecil Disetujui",
+    "outstanding": "Sisa Kas Kecil"
   }
 }

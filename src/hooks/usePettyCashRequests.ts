@@ -27,6 +27,8 @@ export function useApprovePettyCashRequest() {
       qc.invalidateQueries({ queryKey: [KEY] });
       qc.invalidateQueries({ queryKey: ['transactions'] });
       qc.invalidateQueries({ queryKey: ['dashboard'] });
+      qc.invalidateQueries({ queryKey: ['pettyCashBalance'] });
+      qc.invalidateQueries({ queryKey: ['reports'] });
     },
   });
 }

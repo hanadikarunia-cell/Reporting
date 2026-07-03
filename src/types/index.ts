@@ -119,6 +119,8 @@ export interface DashboardSummary {
   totalExpense: number;
   netBalance: number;
   totalPettyCashIssued: number;
+  totalPettyCashExpenses: number;
+  totalPettyCashOutstanding: number;
   transactionCount: number;
   pendingApprovals: number;
   monthlySeries: MonthlySeriesPoint[];
