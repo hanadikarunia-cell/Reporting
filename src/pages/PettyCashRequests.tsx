@@ -23,6 +23,7 @@ import Typography from '@mui/material/Typography';
 import AddIcon from '@mui/icons-material/Add';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import type { GridColDef } from '@mui/x-data-grid';
 import DataTable from '@/components/DataTable';
@@ -32,6 +33,7 @@ import { useBranches } from '@/hooks/useBranches';
 import {
   useApprovePettyCashRequest,
   useCreatePettyCashRequest,
+  useDeletePettyCashRequest,
   usePettyCashRequests,
   useRejectPettyCashRequest,
 } from '@/hooks/usePettyCashRequests';
@@ -48,9 +50,11 @@ export default function PettyCashRequests() {
   const createMut = useCreatePettyCashRequest();
   const approveMut = useApprovePettyCashRequest();
   const rejectMut = useRejectPettyCashRequest();
+  const deleteMut = useDeletePettyCashRequest();
 
   const [open, setOpen] = useState(false);
   const [rejectTarget, setRejectTarget] = useState<PettyCashRequest | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<PettyCashRequest | null>(null);
 
   const schema = useMemo(
     () =>
@@ -109,28 +113,39 @@ export default function PettyCashRequests() {
     {
       field: 'actions',
       headerName: t('common.actions'),
-      width: 140,
+      width: 180,
       sortable: false,
       filterable: false,
       renderCell: (params) => {
         const row = params.row;
-        if (!isManager || row.status !== 'Submitted') return null;
+        if (!isManager) return null;
         return (
           <Stack direction="row" spacing={0.5}>
-            <Tooltip title={t('pettyCash.approve')}>
-              <IconButton
-                size="small"
-                color="success"
-                onClick={() => approveMut.mutate(row.id)}
-              >
-                <CheckCircleIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title={t('pettyCash.reject')}>
-              <IconButton size="small" color="error" onClick={() => setRejectTarget(row)}>
-                <CancelIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
+            {row.status === 'Submitted' && (
+              <>
+                <Tooltip title={t('pettyCash.approve')}>
+                  <IconButton
+                    size="small"
+                    color="success"
+                    onClick={() => approveMut.mutate(row.id)}
+                  >
+                    <CheckCircleIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title={t('pettyCash.reject')}>
+                  <IconButton size="small" color="error" onClick={() => setRejectTarget(row)}>
+                    <CancelIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </>
+            )}
+            {row.status !== 'Approved' && (
+              <Tooltip title={t('common.delete')}>
+                <IconButton size="small" color="error" onClick={() => setDeleteTarget(row)}>
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            )}
           </Stack>
         );
       },
@@ -242,6 +257,22 @@ export default function PettyCashRequests() {
           setRejectTarget(null);
         }}
         onClose={() => setRejectTarget(null)}
+      />
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title={t('pettyCash.deleteTitle')}
+        message={t('pettyCash.deleteMessage', {
+          amount: deleteTarget ? formatCurrency(deleteTarget.amount) : '',
+        })}
+        confirmLabel={t('common.delete')}
+        confirmColor="error"
+        loading={deleteMut.isPending}
+        onConfirm={async () => {
+          if (deleteTarget) await deleteMut.mutateAsync(deleteTarget.id);
+          setDeleteTarget(null);
+        }}
+        onClose={() => setDeleteTarget(null)}
       />
     </Box>
   );

@@ -12,6 +12,7 @@ interface StatCardProps {
   icon: ReactNode;
   color?: 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'info';
   subtitle?: string;
+  onClick?: () => void;
 }
 
 export default function StatCard({
@@ -20,12 +21,23 @@ export default function StatCard({
   icon,
   color = 'primary',
   subtitle,
+  onClick,
 }: StatCardProps) {
   const theme = useTheme();
   const paletteColor = theme.palette[color].main;
 
   return (
-    <Card sx={{ height: '100%' }}>
+    <Card
+      sx={{
+        height: '100%',
+        ...(onClick && {
+          cursor: 'pointer',
+          transition: 'box-shadow 0.15s, transform 0.15s',
+          '&:hover': { boxShadow: 4, transform: 'translateY(-2px)' },
+        }),
+      }}
+      onClick={onClick}
+    >
       <CardContent
         sx={{ display: 'flex', alignItems: 'center', gap: 2, height: '100%' }}
       >

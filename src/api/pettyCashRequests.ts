@@ -23,4 +23,8 @@ export const pettyCashRequestsApi = {
     const { data } = await axiosClient.post<PettyCashRequest>(`/petty-cash-requests/${id}/reject`, { reason });
     return data;
   },
+
+  async remove(id: string): Promise<void> {
+    await axiosClient.delete(`/petty-cash-requests/${id}`);
+  },
 };

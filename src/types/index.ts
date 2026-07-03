@@ -128,6 +128,27 @@ export interface DashboardSummary {
   recent: Transaction[];
 }
 
+export type DashboardMetric =
+  | 'income'
+  | 'expense'
+  | 'balance'
+  | 'pettyCashIssued'
+  | 'pettyCashExpenses'
+  | 'pettyCashOutstanding';
+
+export interface PettyCashUserSummary {
+  userId: string;
+  displayName: string;
+  issued: number;
+  spent: number;
+  outstanding: number;
+}
+
+export interface DashboardBreakdown {
+  transactions: Transaction[];
+  userSummaries: PettyCashUserSummary[];
+}
+
 export interface ReportFilters {
   from?: string;
   to?: string;

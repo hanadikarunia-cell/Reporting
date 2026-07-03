@@ -41,6 +41,7 @@
   },
   "common": {
     "cancel": "Batal",
+    "close": "Tutup",
     "confirm": "Konfirmasi",
     "save": "Simpan",
     "saving": "Menyimpan…",
@@ -107,7 +108,16 @@
     "expenseByMonth": "Pengeluaran per Bulan",
     "recentTransactions": "Transaksi Terbaru",
     "loadingDashboard": "Memuat dasbor…",
-    "failedToLoad": "Gagal memuat dasbor"
+    "failedToLoad": "Gagal memuat dasbor",
+    "detailTitle_income": "Rincian Total Pemasukan",
+    "detailTitle_expense": "Rincian Total Pengeluaran",
+    "detailTitle_balance": "Rincian Perubahan Saldo",
+    "detailTitle_pettyCashIssued": "Rincian Kas Kecil Dikeluarkan",
+    "detailTitle_pettyCashExpenses": "Rincian Pengeluaran Kas Kecil",
+    "detailTitle_pettyCashOutstanding": "Sisa Kas Kecil per Pengguna",
+    "issued": "Dikeluarkan",
+    "spent": "Terpakai",
+    "outstanding": "Sisa"
   },
   "transactions": {
     "title": "Transaksi",
@@ -226,11 +236,13 @@
     "reject": "Tolak",
     "rejectTitle": "Tolak permintaan kas kecil",
     "rejectMessage": "Tolak permintaan kas kecil ini? Pemohon akan diberi tahu.",
+    "deleteTitle": "Hapus permintaan kas kecil",
+    "deleteMessage": "Hapus permintaan sebesar {{amount}}? Tindakan ini tidak dapat dibatalkan.",
     "reasonRequired": "Alasan wajib diisi",
     "amountPositive": "Jumlah harus lebih besar dari nol",
     "branchRequired": "Cabang wajib diisi",
     "totalIssued": "Kas Kecil Dikeluarkan",
-    "totalExpenses": "Pengeluaran Kas Kecil Disetujui",
+    "totalExpenses": "Pengeluaran Kas Kecil",
     "outstanding": "Sisa Kas Kecil"
   }
 }

@@ -41,3 +41,11 @@ export function useRejectPettyCashRequest() {
     onSuccess: () => qc.invalidateQueries({ queryKey: [KEY] }),
   });
 }
+
+export function useDeletePettyCashRequest() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => pettyCashRequestsApi.remove(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: [KEY] }),
+  });
+}

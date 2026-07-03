@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
@@ -36,17 +36,21 @@ import StatCard from '@/components/StatCard';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { StatusChip, TypeChip } from '@/components/StatusChip';
 import DataTable from '@/components/DataTable';
+import DashboardDetailDialog from '@/components/DashboardDetailDialog';
 import { useDashboard } from '@/hooks/useDashboard';
+import { useAuth } from '@/context/AuthContext';
 import { formatCurrency, formatDate, getErrorMessage } from '@/utils/format';
 import type { GridColDef } from '@mui/x-data-grid';
-import type { Transaction } from '@/types';
+import type { DashboardMetric, Transaction } from '@/types';
 
 const PIE_COLORS = ['#1976d2', '#00897b', '#ed6c02', '#9c27b0', '#d32f2f', '#0288d1'];
 
 export default function Dashboard() {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { isManager } = useAuth();
   const { data, isLoading, isError, error } = useDashboard();
+  const [selectedMetric, setSelectedMetric] = useState<DashboardMetric | null>(null);
 
   const monthlySeries = useMemo(() => data?.monthlySeries ?? [], [data]);
 
@@ -88,20 +92,24 @@ export default function Dashboard() {
   return (
     <Box>
       <Grid container spacing={3}>
-        <Grid item xs={12} sm={6} lg={3}>
-          <StatCard
-            title={t('dashboard.totalIncome')}
-            value={formatCurrency(data.totalIncome)}
-            icon={<TrendingUpIcon />}
-            color="success"
-          />
-        </Grid>
+        {isManager && (
+          <Grid item xs={12} sm={6} lg={3}>
+            <StatCard
+              title={t('dashboard.totalIncome')}
+              value={formatCurrency(data.totalIncome)}
+              icon={<TrendingUpIcon />}
+              color="success"
+              onClick={() => setSelectedMetric('income')}
+            />
+          </Grid>
+        )}
         <Grid item xs={12} sm={6} lg={3}>
           <StatCard
             title={t('dashboard.totalExpenses')}
             value={formatCurrency(data.totalExpense)}
             icon={<TrendingDownIcon />}
             color="warning"
+            onClick={() => setSelectedMetric('expense')}
           />
         </Grid>
         <Grid item xs={12} sm={6} lg={3}>
@@ -110,6 +118,7 @@ export default function Dashboard() {
             value={formatCurrency(data.netBalance)}
             icon={<AccountBalanceIcon />}
             color="primary"
+            onClick={() => setSelectedMetric('balance')}
           />
         </Grid>
         <Grid item xs={12} sm={6} lg={3}>
@@ -118,6 +127,7 @@ export default function Dashboard() {
             value={formatCurrency(data.totalPettyCashIssued)}
             icon={<PaidIcon />}
             color="info"
+            onClick={() => setSelectedMetric('pettyCashIssued')}
           />
         </Grid>
         <Grid item xs={12} sm={6} lg={3}>
@@ -126,6 +136,7 @@ export default function Dashboard() {
             value={formatCurrency(data.totalPettyCashExpenses)}
             icon={<ReceiptLongIcon />}
             color="warning"
+            onClick={() => setSelectedMetric('pettyCashExpenses')}
           />
         </Grid>
         <Grid item xs={12} sm={6} lg={3}>
@@ -134,6 +145,7 @@ export default function Dashboard() {
             value={formatCurrency(data.totalPettyCashOutstanding)}
             icon={<SavingsIcon />}
             color="info"
+            onClick={() => setSelectedMetric('pettyCashOutstanding')}
           />
         </Grid>
 
@@ -260,6 +272,8 @@ export default function Dashboard() {
           </Card>
         </Grid>
       </Grid>
+
+      <DashboardDetailDialog metric={selectedMetric} onClose={() => setSelectedMetric(null)} />
     </Box>
   );
 }
