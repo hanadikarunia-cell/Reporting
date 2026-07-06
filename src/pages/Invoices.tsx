@@ -30,6 +30,7 @@ import AddIcon from '@mui/icons-material/Add';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PrintIcon from '@mui/icons-material/Print';
+import UndoIcon from '@mui/icons-material/Undo';
 
 import type { GridColDef } from '@mui/x-data-grid';
 import DataTable from '@/components/DataTable';
@@ -41,6 +42,7 @@ import {
   useDeleteInvoice,
   useInvoices,
   useMarkInvoicePaid,
+  useVoidInvoice,
 } from '@/hooks/useInvoices';
 import type { CreateInvoiceInput, Invoice, InvoiceStatus, InvoiceType, TaxScheme } from '@/types';
 import { formatCurrency, formatDate, getErrorMessage } from '@/utils/format';
@@ -71,10 +73,12 @@ export default function Invoices() {
   const createMut = useCreateInvoice();
   const markPaidMut = useMarkInvoicePaid();
   const deleteMut = useDeleteInvoice();
+  const voidMut = useVoidInvoice();
 
   const [open, setOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Invoice | null>(null);
   const [payTarget, setPayTarget] = useState<Invoice | null>(null);
+  const [voidTarget, setVoidTarget] = useState<Invoice | null>(null);
   const [printTarget, setPrintTarget] = useState<Invoice | null>(null);
 
   const branchNameById = useMemo(() => new Map(branches.map((b) => [b.id, b.name])), [branches]);
@@ -277,6 +281,13 @@ export default function Invoices() {
               <Tooltip title={t('common.delete')}>
                 <IconButton size="small" color="error" onClick={() => setDeleteTarget(row)}>
                   <DeleteIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            )}
+            {row.status === 'Paid' && (
+              <Tooltip title={t('invoices.void')}>
+                <IconButton size="small" color="warning" onClick={() => setVoidTarget(row)}>
+                  <UndoIcon fontSize="small" />
                 </IconButton>
               </Tooltip>
             )}
@@ -538,6 +549,23 @@ export default function Invoices() {
           setDeleteTarget(null);
         }}
         onClose={() => setDeleteTarget(null)}
+      />
+
+      {/* Void confirmation */}
+      <ConfirmDialog
+        open={!!voidTarget}
+        title={t('invoices.voidTitle')}
+        message={t('invoices.voidMessage', {
+          amount: voidTarget ? formatCurrency(voidTarget.totalAmount) : '',
+        })}
+        confirmLabel={t('invoices.void')}
+        confirmColor="warning"
+        loading={voidMut.isPending}
+        onConfirm={async () => {
+          if (voidTarget) await voidMut.mutateAsync(voidTarget.id);
+          setVoidTarget(null);
+        }}
+        onClose={() => setVoidTarget(null)}
       />
 
       {/* Print view */}

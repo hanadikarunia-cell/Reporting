@@ -253,6 +253,9 @@
     "markPaidMessage": "Mark this invoice ({{amount}}) as paid? This will post the income (and PPH23 withholding, if any) to the ledger.",
     "deleteTitle": "Delete invoice",
     "deleteMessage": "Delete this unpaid invoice for {{amount}}? This cannot be undone.",
+    "void": "Void",
+    "voidTitle": "Void paid invoice",
+    "voidMessage": "Void this paid invoice for {{amount}}? This deletes its income (and PPH23, if any) transactions from the ledger and reopens it as Unpaid.",
     "type": {
       "Rental": "Rental",
       "ServiceBill": "Service Bill"

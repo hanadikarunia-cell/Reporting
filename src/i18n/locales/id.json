@@ -253,6 +253,9 @@
     "markPaidMessage": "Tandai faktur ini ({{amount}}) sebagai lunas? Ini akan mencatat pemasukan (dan potongan PPH23, jika ada) ke buku besar.",
     "deleteTitle": "Hapus faktur",
     "deleteMessage": "Hapus faktur belum lunas sebesar {{amount}}? Tindakan ini tidak dapat dibatalkan.",
+    "void": "Batalkan",
+    "voidTitle": "Batalkan faktur lunas",
+    "voidMessage": "Batalkan faktur lunas sebesar {{amount}} ini? Ini akan menghapus transaksi pemasukan (dan PPH23, jika ada) dari buku besar dan mengembalikan status menjadi Belum Lunas.",
     "type": {
       "Rental": "Sewa",
       "ServiceBill": "Tagihan Jasa"

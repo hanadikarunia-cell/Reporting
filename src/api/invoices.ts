@@ -19,6 +19,11 @@ export const invoicesApi = {
     return data;
   },
 
+  async void(id: string): Promise<Invoice> {
+    const { data } = await axiosClient.post<Invoice>(`/invoices/${id}/void`);
+    return data;
+  },
+
   async remove(id: string): Promise<void> {
     await axiosClient.delete(`/invoices/${id}`);
   },

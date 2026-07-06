@@ -42,3 +42,11 @@ export function useDeleteInvoice() {
     onSuccess: () => invalidateInvoiceDerivedQueries(qc),
   });
 }
+
+export function useVoidInvoice() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => invoicesApi.void(id),
+    onSuccess: () => invalidateInvoiceDerivedQueries(qc),
+  });
+}
