@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
@@ -13,6 +13,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import Divider from '@mui/material/Divider';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
 import MenuItem from '@mui/material/MenuItem';
@@ -33,6 +34,14 @@ import { formatCurrency, formatDate, getErrorMessage } from '@/utils/format';
 
 function todayIso() {
   return new Date().toISOString().slice(0, 10);
+}
+
+function addMonthsIso(dateIso: string, months: number): string | null {
+  if (!dateIso || !Number.isFinite(months)) return null;
+  const d = new Date(dateIso);
+  if (Number.isNaN(d.getTime())) return null;
+  d.setMonth(d.getMonth() + months);
+  return d.toISOString();
 }
 
 export default function Cars() {
@@ -109,6 +118,13 @@ export default function Cars() {
     });
   }, [open, editing, branches, reset]);
 
+  const watchedStartDate = useWatch({ control, name: 'contractStartDate' });
+  const watchedDuration = useWatch({ control, name: 'contractDurationMonths' });
+  const contractEndPreview = useMemo(
+    () => addMonthsIso(watchedStartDate, Number(watchedDuration)),
+    [watchedStartDate, watchedDuration],
+  );
+
   const onSubmit = async (values: FormValues) => {
     const payload: CarInput = {
       branch: values.branch,
@@ -149,6 +165,12 @@ export default function Cars() {
       headerName: t('cars.contractEndDate'),
       width: 130,
       valueFormatter: (value) => formatDate(value as string),
+    },
+    {
+      field: 'remainingBillingPeriods',
+      headerName: t('cars.remainingBillingPeriods'),
+      width: 150,
+      valueGetter: (_value, row) => `${row.remainingBillingPeriods} / ${row.contractDurationMonths}`,
     },
     {
       field: 'isActive',
@@ -221,12 +243,6 @@ export default function Cars() {
               <Alert severity="error" sx={{ mb: 2 }}>
                 {serverError}
               </Alert>
-            )}
-            {editing && (
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                {t('cars.remainingDebt')}: {formatCurrency(editing.remainingDebt)} ·{' '}
-                {t('cars.contractEndDate')}: {formatDate(editing.contractEndDate)}
-              </Typography>
             )}
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
@@ -328,9 +344,36 @@ export default function Cars() {
                   inputProps={{ step: '1', min: '1' }}
                   {...register('contractDurationMonths')}
                   error={!!errors.contractDurationMonths}
-                  helperText={errors.contractDurationMonths?.message}
+                  helperText={
+                    errors.contractDurationMonths?.message ?? t('cars.durationIsBillingPeriods')
+                  }
                 />
               </Grid>
+
+              <Grid item xs={12}>
+                <Divider sx={{ my: 1 }} />
+                <Stack spacing={0.5}>
+                  <Typography variant="body2" color="text.secondary">
+                    {t('cars.contractEndDate')}:{' '}
+                    <b>{contractEndPreview ? formatDate(contractEndPreview) : '—'}</b>
+                  </Typography>
+                  {editing && (
+                    <>
+                      <Typography variant="body2" color="text.secondary">
+                        {t('cars.remainingDebt')}: <b>{formatCurrency(editing.remainingDebt)}</b>
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {t('cars.remainingBillingPeriods')}:{' '}
+                        <b>
+                          {editing.remainingBillingPeriods} / {editing.contractDurationMonths}
+                        </b>{' '}
+                        ({t('cars.billingPeriodsPaid', { count: editing.paidBillingPeriods })})
+                      </Typography>
+                    </>
+                  )}
+                </Stack>
+              </Grid>
+
               <Grid item xs={12}>
                 <TextField
                   label={t('cars.notes')}

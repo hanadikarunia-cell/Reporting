@@ -56,6 +56,8 @@ export interface Car {
   contractStartDate: string;
   contractDurationMonths: number;
   contractEndDate: string;
+  paidBillingPeriods: number;
+  remainingBillingPeriods: number;
   notes?: string;
   isActive: boolean;
   createdBy: string;

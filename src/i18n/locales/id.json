@@ -217,7 +217,10 @@
     "plateRequired": "Nomor plat wajib diisi",
     "amountNonNegative": "Jumlah tidak boleh negatif",
     "contractStartRequired": "Tanggal mulai kontrak wajib diisi",
-    "durationPositive": "Durasi minimal 1 bulan"
+    "durationPositive": "Durasi minimal 1 bulan",
+    "durationIsBillingPeriods": "Juga digunakan sebagai jumlah periode tagihan (mis. 60 bulan = 60 faktur sewa)",
+    "remainingBillingPeriods": "Sisa Periode Tagihan",
+    "billingPeriodsPaid": "{{count}} lunas"
   },
   "invoices": {
     "title": "Faktur",

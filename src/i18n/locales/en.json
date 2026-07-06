@@ -217,7 +217,10 @@
     "plateRequired": "Plate number is required",
     "amountNonNegative": "Amount cannot be negative",
     "contractStartRequired": "Contract start date is required",
-    "durationPositive": "Duration must be at least 1 month"
+    "durationPositive": "Duration must be at least 1 month",
+    "durationIsBillingPeriods": "Also used as the number of billing periods (e.g. 60 months = 60 rental invoices)",
+    "remainingBillingPeriods": "Remaining Billing Periods",
+    "billingPeriodsPaid": "{{count}} paid"
   },
   "invoices": {
     "title": "Invoices",
