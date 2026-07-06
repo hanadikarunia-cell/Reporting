@@ -258,6 +258,54 @@ export interface PettyCashRequestFilters {
   pageSize?: number;
 }
 
+export type InvoiceType = 'Rental' | 'ServiceBill';
+export type InvoiceStatus = 'Unpaid' | 'Paid';
+export type TaxScheme = 'Combined' | 'WageOnly' | 'FeeOnly';
+
+export interface Invoice {
+  id: string;
+  type: InvoiceType;
+  branch: string;
+  clientName: string;
+  invoiceDate: string;
+  carId?: string;
+  monthlyBill?: number;
+  driverName?: string;
+  wageDeposit?: number;
+  fee?: number;
+  taxScheme?: TaxScheme;
+  ppnAmount: number;
+  pph23Amount: number;
+  totalAmount: number;
+  status: InvoiceStatus;
+  paidDate?: string;
+  linkedIncomeTransactionId?: string;
+  linkedExpenseTransactionId?: string;
+  createdBy: string;
+  createdByName: string;
+  createdDate: string;
+}
+
+export interface CreateInvoiceInput {
+  type: InvoiceType;
+  branch: string;
+  clientName?: string;
+  invoiceDate: string;
+  carId?: string;
+  driverName?: string;
+  wageDeposit?: number;
+  fee?: number;
+  taxScheme?: TaxScheme;
+}
+
+export interface InvoiceFilters {
+  branch?: string;
+  type?: InvoiceType;
+  status?: InvoiceStatus;
+  page?: number;
+  pageSize?: number;
+}
+
 export interface AuditLog {
   id: string;
   timestamp: string;

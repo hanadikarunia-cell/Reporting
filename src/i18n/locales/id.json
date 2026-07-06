@@ -219,6 +219,58 @@
     "contractStartRequired": "Tanggal mulai kontrak wajib diisi",
     "durationPositive": "Durasi minimal 1 bulan"
   },
+  "invoices": {
+    "title": "Faktur",
+    "newInvoice": "Faktur Baru",
+    "invoiceType": "Jenis Faktur",
+    "invoiceDate": "Tanggal Faktur",
+    "client": "Klien",
+    "driver": "Sopir",
+    "car": "Mobil",
+    "wageDeposit": "Setoran Upah",
+    "fee": "Biaya Jasa",
+    "monthlyBill": "Tagihan Bulanan",
+    "taxScheme": "Skema Pajak",
+    "total": "Total Faktur",
+    "preview": "Pratinjau",
+    "all": "Semua",
+    "accountsReceivable": "Piutang Usaha",
+    "paid": "Lunas",
+    "markPaid": "Tandai Lunas",
+    "print": "Cetak",
+    "failedToLoad": "Gagal memuat faktur",
+    "branchRequired": "Cabang wajib diisi",
+    "dateRequired": "Tanggal faktur wajib diisi",
+    "carRequired": "Pilih mobil untuk faktur ini",
+    "clientRequired": "Nama klien wajib diisi",
+    "wageRequired": "Setoran upah wajib diisi",
+    "feeRequired": "Biaya jasa wajib diisi",
+    "schemeRequired": "Pilih skema pajak",
+    "markPaidTitle": "Tandai faktur lunas",
+    "markPaidMessage": "Tandai faktur ini ({{amount}}) sebagai lunas? Ini akan mencatat pemasukan (dan potongan PPH23, jika ada) ke buku besar.",
+    "deleteTitle": "Hapus faktur",
+    "deleteMessage": "Hapus faktur belum lunas sebesar {{amount}}? Tindakan ini tidak dapat dibatalkan.",
+    "type": {
+      "Rental": "Sewa",
+      "ServiceBill": "Tagihan Jasa"
+    },
+    "status": {
+      "Unpaid": "Belum Lunas",
+      "Paid": "Lunas"
+    },
+    "scheme": {
+      "Combined": "PPN dari Upah+Biaya, PPH23 dari Biaya",
+      "WageOnly": "PPN & PPH23 dari Upah saja",
+      "FeeOnly": "PPN & PPH23 dari Biaya saja"
+    }
+  },
+  "accountsPayable": {
+    "title": "Utang Usaha",
+    "subtitle": "Sisa utang pembiayaan mobil, dari modul Mobil",
+    "totalOutstanding": "Total Sisa Utang",
+    "outstanding": "Sisa Utang",
+    "failedToLoad": "Gagal memuat utang usaha"
+  },
   "auditLogs": {
     "title": "Log Audit",
     "action": "Aksi",

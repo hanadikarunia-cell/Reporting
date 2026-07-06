@@ -219,6 +219,58 @@
     "contractStartRequired": "Contract start date is required",
     "durationPositive": "Duration must be at least 1 month"
   },
+  "invoices": {
+    "title": "Invoices",
+    "newInvoice": "New Invoice",
+    "invoiceType": "Invoice Type",
+    "invoiceDate": "Invoice Date",
+    "client": "Client",
+    "driver": "Driver",
+    "car": "Car",
+    "wageDeposit": "Wage Deposit",
+    "fee": "Fee",
+    "monthlyBill": "Monthly Bill",
+    "taxScheme": "Tax Scheme",
+    "total": "Invoice Total",
+    "preview": "Preview",
+    "all": "All",
+    "accountsReceivable": "Accounts Receivable",
+    "paid": "Paid",
+    "markPaid": "Mark Paid",
+    "print": "Print",
+    "failedToLoad": "Failed to load invoices",
+    "branchRequired": "Branch is required",
+    "dateRequired": "Invoice date is required",
+    "carRequired": "Select which car this invoice is for",
+    "clientRequired": "Client name is required",
+    "wageRequired": "Wage Deposit is required",
+    "feeRequired": "Fee is required",
+    "schemeRequired": "Select a tax scheme",
+    "markPaidTitle": "Mark invoice as paid",
+    "markPaidMessage": "Mark this invoice ({{amount}}) as paid? This will post the income (and PPH23 withholding, if any) to the ledger.",
+    "deleteTitle": "Delete invoice",
+    "deleteMessage": "Delete this unpaid invoice for {{amount}}? This cannot be undone.",
+    "type": {
+      "Rental": "Rental",
+      "ServiceBill": "Service Bill"
+    },
+    "status": {
+      "Unpaid": "Unpaid",
+      "Paid": "Paid"
+    },
+    "scheme": {
+      "Combined": "PPN on Wage+Fee, PPH23 on Fee",
+      "WageOnly": "PPN & PPH23 on Wage only",
+      "FeeOnly": "PPN & PPH23 on Fee only"
+    }
+  },
+  "accountsPayable": {
+    "title": "Accounts Payable",
+    "subtitle": "Outstanding car financing debt, from the Cars module",
+    "totalOutstanding": "Total Outstanding",
+    "outstanding": "Outstanding",
+    "failedToLoad": "Failed to load accounts payable"
+  },
   "auditLogs": {
     "title": "Audit Logs",
     "action": "Action",

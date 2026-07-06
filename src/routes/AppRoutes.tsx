@@ -12,6 +12,8 @@ import Cars from '@/pages/Cars';
 import Reports from '@/pages/Reports';
 import Users from '@/pages/Users';
 import Branches from '@/pages/Branches';
+import Invoices from '@/pages/Invoices';
+import AccountsPayable from '@/pages/AccountsPayable';
 import AuditLogs from '@/pages/AuditLogs';
 import Settings from '@/pages/Settings';
 import NotFound from '@/pages/NotFound';
@@ -94,6 +96,22 @@ export default function AppRoutes() {
             element={
               <Layout>
                 <AuditLogs />
+              </Layout>
+            }
+          />
+          <Route
+            path="/invoices"
+            element={
+              <Layout>
+                <Invoices />
+              </Layout>
+            }
+          />
+          <Route
+            path="/accounts-payable"
+            element={
+              <Layout>
+                <AccountsPayable />
               </Layout>
             }
           />
